@@ -1,5 +1,7 @@
 # Emerald Grove Veterinary Clinic
 
+[![Claude Code Reviews](https://img.shields.io/badge/Claude-Code%20Reviews-blueviolet)](https://github.com/anthropics/claude-code-action)
+
 A comprehensive veterinary clinic management system built with Spring Boot. This application demonstrates modern Java web development practices and serves as a reference implementation for enterprise-grade applications.
 
 ## Overview

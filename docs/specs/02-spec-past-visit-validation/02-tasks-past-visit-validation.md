@@ -40,17 +40,17 @@ Implement Bean Validation constraint on the Visit entity to prevent past dates. 
 
 #### 1.0 Tasks
 
-- [ ] 1.1 **RED**: Write failing test `shouldNotValidateWhenVisitDateIsInPast()` in `ValidatorTests.java` that creates a Visit with a past date and asserts validation fails
-- [ ] 1.2 **RED**: Write test `shouldValidateWhenVisitDateIsToday()` that creates a Visit with today's date and asserts validation passes
-- [ ] 1.3 **RED**: Write test `shouldValidateWhenVisitDateIsFuture()` that creates a Visit with a future date and asserts validation passes
-- [ ] 1.4 **RED**: Run tests with `./mvnw test -Dtest=ValidatorTests` and verify all three new tests fail (Visit has no validation yet)
-- [ ] 1.5 **RED**: Commit failing tests with message: `test: add validation tests for visit date constraints`
-- [ ] 1.6 **GREEN**: Add `@FutureOrPresent(message = "Visit date cannot be in the past")` annotation to `date` field in `Visit.java`
-- [ ] 1.7 **GREEN**: Run tests with `./mvnw test -Dtest=ValidatorTests` and verify all three tests now pass
-- [ ] 1.8 **GREEN**: Commit implementation with message: `feat: add past date validation to Visit entity`
-- [ ] 1.9 **REFACTOR**: Generate coverage report with `./mvnw test jacoco:report` and verify 100% coverage for Visit validation
-- [ ] 1.10 **REFACTOR**: Review code for any improvements (ensure error message is clear, annotation placement is correct)
-- [ ] 1.11 **REFACTOR**: Commit any refactoring with message: `refactor: improve visit date validation implementation` (if applicable)
+- [x] 1.1 **RED**: Write failing test `shouldNotValidateWhenVisitDateIsInPast()` in `ValidatorTests.java` that creates a Visit with a past date and asserts validation fails
+- [x] 1.2 **RED**: Write test `shouldValidateWhenVisitDateIsToday()` that creates a Visit with today's date and asserts validation passes
+- [x] 1.3 **RED**: Write test `shouldValidateWhenVisitDateIsFuture()` that creates a Visit with a future date and asserts validation passes
+- [x] 1.4 **RED**: Run tests with `./mvnw test -Dtest=ValidatorTests` and verify all three new tests fail (Visit has no validation yet)
+- [x] 1.5 **RED**: Commit failing tests with message: `test: add validation tests for visit date constraints`
+- [x] 1.6 **GREEN**: Add `@FutureOrPresent(message = "Visit date cannot be in the past")` annotation to `date` field in `Visit.java`
+- [x] 1.7 **GREEN**: Run tests with `./mvnw test -Dtest=ValidatorTests` and verify all three tests now pass
+- [x] 1.8 **GREEN**: Commit implementation with message: `feat: add past date validation to Visit entity`
+- [x] 1.9 **REFACTOR**: Generate coverage report with `./mvnw test jacoco:report` and verify 100% coverage for Visit validation
+- [x] 1.10 **REFACTOR**: Review code for any improvements (ensure error message is clear, annotation placement is correct)
+- [x] 1.11 **REFACTOR**: Commit any refactoring with message: `refactor: improve visit date validation implementation` (if applicable)
 
 ---
 
@@ -69,20 +69,20 @@ Update VisitController to properly handle validation errors and ensure the web f
 
 #### 2.0 Tasks
 
-- [ ] 2.1 **RED**: Write failing test `testProcessNewVisitFormWithPastDate()` in `VisitControllerTests.java` that submits a past date via POST and asserts status is OK (not redirect) and model has errors
-- [ ] 2.2 **RED**: Write test `testProcessNewVisitFormWithTodayDate()` that submits today's date and asserts successful redirect to owner details page
-- [ ] 2.3 **RED**: Write test `testProcessNewVisitFormWithFutureDate()` that submits a future date and asserts successful redirect
-- [ ] 2.4 **RED**: Run tests with `./mvnw test -Dtest=VisitControllerTests` and verify new tests pass or fail appropriately
-- [ ] 2.5 **RED**: Commit controller tests with message: `test: add controller tests for visit date validation`
-- [ ] 2.6 **GREEN**: Verify `VisitController.processNewVisitForm()` method has `@Valid Visit visit` parameter (should already exist)
-- [ ] 2.7 **GREEN**: Verify controller properly checks `result.hasErrors()` and returns form view on error (should already exist)
-- [ ] 2.8 **GREEN**: Run tests with `./mvnw test -Dtest=VisitControllerTests` and verify all tests pass (validation should work automatically via `@Valid`)
-- [ ] 2.9 **GREEN**: If tests fail, debug and fix controller validation handling, then commit with message: `fix: ensure visit controller handles date validation errors`
-- [ ] 2.10 **REFACTOR**: Manually test the form by starting the app (`./mvnw spring-boot:run`) and navigating to a visit creation form
-- [ ] 2.11 **REFACTOR**: Submit a past date and capture screenshot showing error message "Visit date cannot be in the past" displayed in the form
-- [ ] 2.12 **REFACTOR**: Save screenshot to `docs/specs/02-spec-past-visit-validation/screenshots/visit-form-validation-error.png`
-- [ ] 2.13 **REFACTOR**: Generate coverage report and verify 90%+ coverage for controller code
-- [ ] 2.14 **REFACTOR**: Review and commit any improvements with message: `refactor: improve visit controller validation handling` (if applicable)
+- [x] 2.1 **RED**: Write failing test `testProcessNewVisitFormWithPastDate()` in `VisitControllerTests.java` that submits a past date via POST and asserts status is OK (not redirect) and model has errors
+- [x] 2.2 **RED**: Write test `testProcessNewVisitFormWithTodayDate()` that submits today's date and asserts successful redirect to owner details page
+- [x] 2.3 **RED**: Write test `testProcessNewVisitFormWithFutureDate()` that submits a future date and asserts successful redirect
+- [x] 2.4 **RED**: Run tests with `./mvnw test -Dtest=VisitControllerTests` and verify new tests pass or fail appropriately
+- [x] 2.5 **RED**: Commit controller tests with message: `test: add controller tests for visit date validation`
+- [x] 2.6 **GREEN**: Verify `VisitController.processNewVisitForm()` method has `@Valid Visit visit` parameter (should already exist)
+- [x] 2.7 **GREEN**: Verify controller properly checks `result.hasErrors()` and returns form view on error (should already exist)
+- [x] 2.8 **GREEN**: Run tests with `./mvnw test -Dtest=VisitControllerTests` and verify all tests pass (validation should work automatically via `@Valid`)
+- [x] 2.9 **GREEN**: If tests fail, debug and fix controller validation handling, then commit with message: `fix: ensure visit controller handles date validation errors`
+- [x] 2.10 **REFACTOR**: Manually test the form by starting the app (`./mvnw spring-boot:run`) and navigating to a visit creation form
+- [x] 2.11 **REFACTOR**: Submit a past date and capture screenshot showing error message "Visit date cannot be in the past" displayed in the form
+- [x] 2.12 **REFACTOR**: Save screenshot to `docs/specs/02-spec-past-visit-validation/screenshots/visit-form-validation-error.png`
+- [x] 2.13 **REFACTOR**: Generate coverage report and verify 90%+ coverage for controller code
+- [x] 2.14 **REFACTOR**: Review and commit any improvements with message: `refactor: improve visit controller validation handling` (if applicable)
 
 ---
 
@@ -132,20 +132,20 @@ Collect and organize all proof artifacts, update documentation, and verify the f
 
 #### 4.0 Tasks
 
-- [ ] 4.1 Create proof document `docs/specs/02-spec-past-visit-validation/02-proof-past-visit-validation.md` with template structure
-- [ ] 4.2 Add section "Unit Test Results" with output from `./mvnw test -Dtest=ValidatorTests` showing all tests passing
-- [ ] 4.3 Add section "Controller Test Results" with output from `./mvnw test -Dtest=VisitControllerTests` showing all tests passing
-- [ ] 4.4 Add section "E2E Test Results" with output from `cd e2e-tests && npm test -- visit-scheduling` showing all tests passing
-- [ ] 4.5 Add section "Coverage Report" with link to JaCoCo report and summary of coverage percentages
-- [ ] 4.6 Add section "Manual Testing" with screenshot from Task 2.12 showing validation error in browser
-- [ ] 4.7 Add section "Code Changes" with git diff showing the `@FutureOrPresent` annotation added to Visit.java
-- [ ] 4.8 Create "Coverage Matrix" table mapping each spec requirement to corresponding test(s) that verify it
-- [ ] 4.9 Run `git log --oneline --all | head -20` and document the TDD commit sequence (test → implementation → refactor)
-- [ ] 4.10 Add section "TDD Compliance" showing RED-GREEN-REFACTOR commit sequence for each task
-- [ ] 4.11 Run full test suite with `./mvnw clean test` and verify no regressions (all tests pass)
-- [ ] 4.12 Add section "Full Test Suite Results" with summary output showing total tests passed
-- [ ] 4.13 Run full E2E suite with `cd e2e-tests && npm test` and verify no regressions
-- [ ] 4.14 Add section "Full E2E Suite Results" with summary showing all tests passed
-- [ ] 4.15 Review proof document for completeness, ensure all artifacts are linked and accessible
-- [ ] 4.16 Commit proof document with message: `docs: add proof artifacts for visit date validation feature`
-- [ ] 4.17 Final review: Verify spec requirements, functional requirements, and acceptance criteria are all met
+- [x] 4.1 Create proof document `docs/specs/02-spec-past-visit-validation/02-proof-past-visit-validation.md` with template structure
+- [x] 4.2 Add section "Unit Test Results" with output from `./mvnw test -Dtest=ValidatorTests` showing all tests passing
+- [x] 4.3 Add section "Controller Test Results" with output from `./mvnw test -Dtest=VisitControllerTests` showing all tests passing
+- [x] 4.4 Add section "E2E Test Results" with output from `cd e2e-tests && npm test -- visit-scheduling` showing all tests passing
+- [x] 4.5 Add section "Coverage Report" with link to JaCoCo report and summary of coverage percentages
+- [x] 4.6 Add section "Manual Testing" with screenshot from Task 2.12 showing validation error in browser
+- [x] 4.7 Add section "Code Changes" with git diff showing the `@FutureOrPresent` annotation added to Visit.java
+- [x] 4.8 Create "Coverage Matrix" table mapping each spec requirement to corresponding test(s) that verify it
+- [x] 4.9 Run `git log --oneline --all | head -20` and document the TDD commit sequence (test → implementation → refactor)
+- [x] 4.10 Add section "TDD Compliance" showing RED-GREEN-REFACTOR commit sequence for each task
+- [x] 4.11 Run full test suite with `./mvnw clean test` and verify no regressions (all tests pass)
+- [x] 4.12 Add section "Full Test Suite Results" with summary output showing total tests passed
+- [x] 4.13 Run full E2E suite with `cd e2e-tests && npm test` and verify no regressions
+- [x] 4.14 Add section "Full E2E Suite Results" with summary showing all tests passed
+- [x] 4.15 Review proof document for completeness, ensure all artifacts are linked and accessible
+- [x] 4.16 Commit proof document with message: `docs: add proof artifacts for visit date validation feature`
+- [x] 4.17 Final review: Verify spec requirements, functional requirements, and acceptance criteria are all met

@@ -6,7 +6,7 @@ A comprehensive veterinary clinic management system built with Spring Boot. This
 
 ## Overview
 
-The Emerald Grove Veterinary Clinic application manages the core operations of a veterinary clinic, including:
+The Emerald Grove Veterinary Clinic application manages the core operations of a veterinary clinic, including automated code reviews powered by Claude AI for enhanced code quality.
 
 - **Owner Management**: Register and manage pet owners with contact information
 - **Pet Management**: Track pets, their types, and medical records

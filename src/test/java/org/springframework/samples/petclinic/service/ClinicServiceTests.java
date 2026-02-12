@@ -248,4 +248,89 @@ class ClinicServiceTests {
 			.isNotNull();
 	}
 
+	@Test
+	@Transactional
+	void shouldFindDuplicateOwnerWhenExists() {
+		// Arrange - Create and save an owner
+		Owner owner = new Owner();
+		owner.setFirstName("John");
+		owner.setLastName("Smith");
+		owner.setAddress("123 Main St");
+		owner.setCity("Springfield");
+		owner.setTelephone("1234567890");
+		this.owners.save(owner);
+		Integer savedOwnerId = owner.getId();
+
+		// Act - Search for duplicate with trimmed names
+		String firstName = owner.getFirstName().trim();
+		String lastName = owner.getLastName().trim();
+		String telephone = owner.getTelephone();
+		Optional<Owner> duplicate = this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone(firstName,
+				lastName, telephone);
+
+		// Assert - Duplicate should be found and match saved owner
+		assertThat(duplicate).isPresent();
+		assertThat(duplicate.get().getId()).isEqualTo(savedOwnerId);
+	}
+
+	@Test
+	void shouldNotFindDuplicateOwnerWhenNotExists() {
+		// Arrange - Search for non-existent combination
+		String firstName = "NonExistent";
+		String lastName = "Owner";
+		String telephone = "9999999999";
+
+		// Act - Search for duplicate
+		Optional<Owner> duplicate = this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone(firstName,
+				lastName, telephone);
+
+		// Assert - No duplicate should be found
+		assertThat(duplicate).isEmpty();
+	}
+
+	@Test
+	@Transactional
+	void shouldFindDuplicateOwnerCaseInsensitive() {
+		// Arrange - Create owner with specific case
+		Owner owner = new Owner();
+		owner.setFirstName("John");
+		owner.setLastName("Smith");
+		owner.setAddress("123 Main St");
+		owner.setCity("Springfield");
+		owner.setTelephone("1234567890");
+		this.owners.save(owner);
+
+		// Act - Search with different case
+		Optional<Owner> duplicate = this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone("john",
+				"smith", "1234567890");
+
+		// Assert - Duplicate should be found regardless of case
+		assertThat(duplicate).isPresent();
+		assertThat(duplicate.get().getFirstName()).isEqualTo("John");
+		assertThat(duplicate.get().getLastName()).isEqualTo("Smith");
+	}
+
+	@Test
+	@Transactional
+	void shouldFindDuplicateOwnerWithWhitespace() {
+		// Arrange - Create owner
+		Owner owner = new Owner();
+		owner.setFirstName("John");
+		owner.setLastName("Smith");
+		owner.setAddress("123 Main St");
+		owner.setCity("Springfield");
+		owner.setTelephone("1234567890");
+		this.owners.save(owner);
+
+		// Act - Search with whitespace, trimming before call
+		String firstNameWithWhitespace = " John  ";
+		String lastNameWithWhitespace = "  Smith ";
+		Optional<Owner> duplicate = this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone(
+				firstNameWithWhitespace.trim(), lastNameWithWhitespace.trim(), "1234567890");
+
+		// Assert - Duplicate should be found after trimming
+		assertThat(duplicate).isPresent();
+		assertThat(duplicate.get().getFirstName()).isEqualTo("John");
+	}
+
 }

@@ -62,10 +62,13 @@ This application uses a **simplified layered architecture** without a traditiona
 1. **Entity Layer (Data Layer)** - JSR-303 Bean Validation annotations
    - `Visit.java`: `@NotNull`, `@FutureOrPresent` on date field, `@NotBlank` on description
    - `Owner.java`: `@NotBlank`, `@Pattern` on address/city/telephone
+   - `Person.java`: `@NotBlank` on firstName/lastName (base class validation)
    - Entity validation is automatic when `@Valid` is used in controller
 
 2. **Controller Layer (Presentation Layer)** - Validation trigger and error handling
    - `VisitController.java` lines 92-96: Uses `@Valid` annotation to trigger entity validation
+   - `OwnerController.java`: Consistent @Valid + BindingResult pattern for Owner operations
+   - `PetController.java`: Uses @Valid + BindingResult + custom PetValidator via @InitBinder
    - `BindingResult` captures validation errors from entity annotations
    - Controller checks `result.hasErrors()` and returns to form view on error
    - NO business logic in controller - just validation orchestration
@@ -75,3 +78,17 @@ This application uses a **simplified layered architecture** without a traditiona
 - Controller layer: Triggers validation and handles results (when to validate)
 - No tight coupling - controller doesn't know specific validation rules
 - Follows Dependency Inversion Principle (depends on Spring's validation abstraction)
+
+**Validation message internationalization:**
+- Custom validation messages use message key references: `{visit.date.required}`, `{visit.date.future}`
+- Messages defined in `messages/messages.properties` (lines 9-10)
+- Supports internationalization via messages_*.properties files (de, es, fa, ko, pt, ru, tr)
+- Test validation properly loads message source using `ReloadableResourceBundleMessageSource`
+
+**Visit Date Validation Feature (Audited 2026-02-12):**
+- FULLY COMPLIANT with architecture patterns
+- Entity validation: `@NotNull` + `@FutureOrPresent` on Visit.date
+- Controller integration: @Valid annotation triggers validation in processNewVisitForm
+- Test coverage: ValidatorTests (bean validation), VisitControllerTests (web layer integration)
+- No layer violations detected
+- Consistent with existing Owner/Pet validation patterns

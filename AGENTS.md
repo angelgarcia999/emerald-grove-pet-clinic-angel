@@ -77,6 +77,66 @@ Refer to these comprehensive guides for detailed information:
 - **Quality**: Checkstyle, SpotBugs, SonarQube
 - **Version Control**: Git with conventional commits
 
+## Specialized Agent Team
+
+This project uses specialized agents for automated quality assurance and validation. **Use these agents proactively** throughout the development workflow.
+
+### When to Use Agents
+
+#### During Implementation (Task 3.0 - After Writing Tests)
+
+**REQUIRED - Run after E2E test creation:**
+- **test-temporal-coupling-detector**: Scan E2E tests for hardcoded dates and brittle time logic
+  - Prevents CI failures caused by tests with past dates
+  - Detects temporal coupling patterns before they break
+  - Use: After writing Playwright/Selenium/Cypress tests
+
+**REQUIRED - Run after adding validation messages:**
+- **i18n-sync-validator**: Ensure all language files have required message keys
+  - Prevents I18nPropertiesSyncTest failures
+  - Auto-generates missing translations
+  - Use: After adding @NotNull, @Pattern, or custom validation messages
+
+#### During Validation (Task 4.0 - Before Final Commit)
+
+**REQUIRED - Run before marking implementation complete:**
+- **tdd-enforcer**: Verify strict TDD compliance (RED-GREEN-REFACTOR)
+- **spring-boot-validator**: Check Spring Boot best practices
+- **architecture-compliance-checker**: Validate layered architecture
+- **multi-db-test-runner**: Test across H2, MySQL, PostgreSQL
+
+### Agent Usage Examples
+
+```markdown
+# After writing E2E tests
+- [ ] Write E2E test for feature
+- [ ] Run test-temporal-coupling-detector agent  <-- PROACTIVE
+- [ ] Fix any hardcoded dates
+- [ ] Run i18n-sync-validator agent (if validation added)  <-- PROACTIVE
+- [ ] Commit tests
+
+# Before final validation
+- [ ] Run all 4 validation agents
+- [ ] Fix any issues found
+- [ ] Generate proof artifacts
+```
+
+### Integration with SDD Workflow
+
+```
+Spec → Tasks → Implementation → [AGENT GATES] → Validation
+                                      ↓
+                          • test-temporal-coupling-detector
+                          • i18n-sync-validator
+                                      ↓
+                          • tdd-enforcer
+                          • spring-boot-validator
+                          • architecture-compliance-checker
+                          • multi-db-test-runner
+```
+
+**Critical Rule**: If any agent finds issues, fix them immediately before proceeding.
+
 ## Review Checklist
 
 Before committing code:
@@ -88,5 +148,8 @@ Before committing code:
 - [ ] No code duplication
 - [ ] Proper error handling
 - [ ] Documentation updated
+- [ ] **test-temporal-coupling-detector** passed (if E2E tests modified)
+- [ ] **i18n-sync-validator** passed (if validation messages added)
+- [ ] All validation agents passed (tdd-enforcer, spring-boot-validator, architecture-compliance-checker, multi-db-test-runner)
 
 This guide ensures consistent, high-quality TDD practices for AI contributors to the Emerald Grove Veterinary Clinic application.

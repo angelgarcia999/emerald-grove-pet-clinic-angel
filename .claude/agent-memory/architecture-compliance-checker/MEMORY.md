@@ -92,3 +92,15 @@ This application uses a **simplified layered architecture** without a traditiona
 - Test coverage: ValidatorTests (bean validation), VisitControllerTests (web layer integration)
 - No layer violations detected
 - Consistent with existing Owner/Pet validation patterns
+
+### Repository Query Patterns (Verified 2026-02-12)
+
+**Duplicate Detection Query - Task 1.0 (AUDIT PASSED):**
+- `OwnerRepository.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone()`
+- **Architecture**: Pure data access layer - NO business logic (100% compliant)
+- **Spring Data Pattern**: Query derivation from method name (best practice)
+- **Return Type**: `Optional<Owner>` for null-safety
+- **Search Strategy**: Case-insensitive names, exact telephone match
+- **Test Coverage**: 4 integration tests in `ClinicServiceTests.java` (lines 251-334)
+- **Input Normalization**: Caller responsibility (controller trims whitespace)
+- **Reference Quality**: Exemplifies clean repository pattern for future implementations

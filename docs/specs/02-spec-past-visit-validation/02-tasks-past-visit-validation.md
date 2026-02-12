@@ -86,7 +86,7 @@ Update VisitController to properly handle validation errors and ensure the web f
 
 ---
 
-### [ ] 3.0 Add End-to-End Test Coverage
+### [~] 3.0 Add End-to-End Test Coverage
 
 Implement Playwright tests to validate the complete user journey from form display through submission and error feedback. This ensures the feature works correctly in a real browser environment.
 
@@ -101,20 +101,20 @@ Implement Playwright tests to validate the complete user journey from form displ
 
 #### 3.0 Tasks
 
-- [ ] 3.1 **RED**: Add new test case `rejects visit with past date` in `e2e-tests/tests/features/visit-scheduling.spec.ts`
-- [ ] 3.2 **RED**: In the test, navigate to visit form (`/owners/1`), click "Add Visit", fill form with past date (e.g., `2020-01-01`), and description
-- [ ] 3.3 **RED**: Assert that after form submission, the page remains on the visit form (not redirected) and error message is visible
-- [ ] 3.4 **RED**: Use Playwright locator to find error text containing "Visit date cannot be in the past"
-- [ ] 3.5 **RED**: Add test case `accepts visit with today date` that submits today's date and verifies successful creation (visit appears in table)
-- [ ] 3.6 **RED**: Add test case `accepts visit with future date` that submits a future date and verifies successful creation
-- [ ] 3.7 **RED**: Run E2E tests with `cd e2e-tests && npm test -- visit-scheduling` and verify new tests pass (they should pass if previous tasks completed)
-- [ ] 3.8 **GREEN**: If tests fail, debug the issue (check form error display, Playwright selectors, timing issues) and fix
-- [ ] 3.9 **GREEN**: Commit E2E tests with message: `test(e2e): add visit date validation E2E tests`
-- [ ] 3.10 **REFACTOR**: Review E2E test code for clarity, reduce duplication if possible, improve test data setup
-- [ ] 3.11 **REFACTOR**: Add screenshot capture in the "rejects visit with past date" test using `await page.screenshot()` for proof artifact
-- [ ] 3.12 **REFACTOR**: Run E2E tests again and verify screenshot is saved to test results
-- [ ] 3.13 **REFACTOR**: Open HTML report (`e2e-tests/test-results/html-report/index.html`) and verify all visit-scheduling tests show as passing
-- [ ] 3.14 **REFACTOR**: Commit any refactoring with message: `refactor(e2e): improve visit date validation test coverage` (if applicable)
+- [x] 3.1 **RED**: Add new test case `rejects visit with past date` in `e2e-tests/tests/features/visit-scheduling.spec.ts`
+- [x] 3.2 **RED**: In the test, navigate to visit form (`/owners/1`), click "Add Visit", fill form with past date (e.g., `2020-01-01`), and description
+- [x] 3.3 **RED**: Assert that after form submission, the page remains on the visit form (not redirected) and error message is visible
+- [x] 3.4 **RED**: Use Playwright locator to find error text containing "Visit date cannot be in the past"
+- [x] 3.5 **RED**: Add test case `accepts visit with today date` that submits today's date and verifies successful creation (visit appears in table)
+- [x] 3.6 **RED**: Add test case `accepts visit with future date` that submits a future date and verifies successful creation
+- [x] 3.7 **RED**: Run E2E tests with `cd e2e-tests && npm test -- visit-scheduling` and verify new tests pass (they should pass if previous tasks completed)
+- [x] 3.8 **GREEN**: If tests fail, debug the issue (check form error display, Playwright selectors, timing issues) and fix
+- [x] 3.9 **GREEN**: Commit E2E tests with message: `test(e2e): add visit date validation E2E tests`
+- [x] 3.10 **REFACTOR**: Review E2E test code for clarity, reduce duplication if possible, improve test data setup
+- [x] 3.11 **REFACTOR**: Add screenshot capture in the "rejects visit with past date" test using `await page.screenshot()` for proof artifact
+- [x] 3.12 **REFACTOR**: Run E2E tests again and verify screenshot is saved to test results
+- [x] 3.13 **REFACTOR**: Open HTML report (`e2e-tests/test-results/html-report/index.html`) and verify all visit-scheduling tests show as passing
+- [x] 3.14 **REFACTOR**: Commit any refactoring with message: `refactor(e2e): improve visit date validation test coverage` (if applicable)
 
 ---
 

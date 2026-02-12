@@ -54,3 +54,24 @@ This application uses a **simplified layered architecture** without a traditiona
 - Entities with no validation (should have JSR-303 or custom validators)
 - Inconsistent package organization (features should be self-contained)
 - Missing tests for validation logic
+
+### Validation Architecture (Verified 2026-02-12)
+
+**Two-tier validation approach:**
+
+1. **Entity Layer (Data Layer)** - JSR-303 Bean Validation annotations
+   - `Visit.java`: `@NotNull`, `@FutureOrPresent` on date field, `@NotBlank` on description
+   - `Owner.java`: `@NotBlank`, `@Pattern` on address/city/telephone
+   - Entity validation is automatic when `@Valid` is used in controller
+
+2. **Controller Layer (Presentation Layer)** - Validation trigger and error handling
+   - `VisitController.java` lines 92-96: Uses `@Valid` annotation to trigger entity validation
+   - `BindingResult` captures validation errors from entity annotations
+   - Controller checks `result.hasErrors()` and returns to form view on error
+   - NO business logic in controller - just validation orchestration
+
+**Clean separation verified:**
+- Entity layer: Defines validation rules (what is valid)
+- Controller layer: Triggers validation and handles results (when to validate)
+- No tight coupling - controller doesn't know specific validation rules
+- Follows Dependency Inversion Principle (depends on Spring's validation abstraction)

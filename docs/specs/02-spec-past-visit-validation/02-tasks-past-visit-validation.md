@@ -54,7 +54,7 @@ Implement Bean Validation constraint on the Visit entity to prevent past dates. 
 
 ---
 
-### [ ] 2.0 Integrate Validation in Controller and Form
+### [x] 2.0 Integrate Validation in Controller and Form
 
 Update VisitController to properly handle validation errors and ensure the web form displays appropriate error messages. This task ensures the validation constraint is enforced during form submission and provides clear user feedback.
 

@@ -81,6 +81,19 @@ class OwnerController {
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
 
+		// Trim names for duplicate check
+		String trimmedFirstName = owner.getFirstName().trim();
+		String trimmedLastName = owner.getLastName().trim();
+
+		// Check for duplicate owner
+		Optional<Owner> existingOwner = this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone(
+				trimmedFirstName, trimmedLastName, owner.getTelephone());
+
+		if (existingOwner.isPresent()) {
+			result.rejectValue("firstName", "duplicate", "{owner.duplicate}");
+			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
+		}
+
 		this.owners.save(owner);
 		redirectAttributes.addFlashAttribute("message", "New Owner Created");
 		return "redirect:/owners/" + owner.getId();

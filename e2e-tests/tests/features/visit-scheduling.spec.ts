@@ -27,7 +27,10 @@ test.describe('Visit Scheduling', () => {
 
     await expect(visitPage.heading()).toBeVisible();
 
-    const visitDate = '2024-02-02';
+    // Use future date to pass validation
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 7);
+    const visitDate = futureDate.toISOString().split('T')[0];
     const description = `E2E visit ${Date.now()}`;
     await visitPage.fillVisitDate(visitDate);
     await visitPage.fillDescription(description);

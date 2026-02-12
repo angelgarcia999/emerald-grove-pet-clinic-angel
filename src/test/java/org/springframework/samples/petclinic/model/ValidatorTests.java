@@ -38,6 +38,13 @@ class ValidatorTests {
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+		localValidatorFactoryBean.setValidationMessageSource(
+				new org.springframework.context.support.ReloadableResourceBundleMessageSource() {
+					{
+						setBasename("classpath:messages/messages");
+						setDefaultEncoding("UTF-8");
+					}
+				});
 		localValidatorFactoryBean.afterPropertiesSet();
 		return localValidatorFactoryBean;
 	}
@@ -99,6 +106,22 @@ class ValidatorTests {
 		Set<ConstraintViolation<Visit>> constraintViolations = validator.validate(visit);
 
 		assertThat(constraintViolations).isEmpty();
+	}
+
+	@Test
+	void shouldNotValidateWhenVisitDateIsNull() {
+		LocaleContextHolder.setLocale(Locale.ENGLISH);
+		Visit visit = new Visit();
+		visit.setDate(null); // Explicitly set to null
+		visit.setDescription("Test visit");
+
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Visit>> constraintViolations = validator.validate(visit);
+
+		assertThat(constraintViolations).hasSize(1);
+		ConstraintViolation<Visit> violation = constraintViolations.iterator().next();
+		assertThat(violation.getPropertyPath()).hasToString("date");
+		assertThat(violation.getMessage()).isEqualTo("Visit date is required");
 	}
 
 }

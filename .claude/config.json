@@ -1,0 +1,6 @@
+{
+  "agents": [
+    "tdd-compliance-guardian",
+    "multi-db-test-runner"
+  ]
+}

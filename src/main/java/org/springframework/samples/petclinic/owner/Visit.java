@@ -25,6 +25,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Simple JavaBean domain object representing a visit.
@@ -38,7 +39,8 @@ public class Visit extends BaseEntity {
 
 	@Column(name = "visit_date")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	@FutureOrPresent(message = "Visit date cannot be in the past")
+	@NotNull(message = "{visit.date.required}")
+	@FutureOrPresent(message = "{visit.date.future}")
 	private LocalDate date;
 
 	@NotBlank

@@ -74,4 +74,37 @@ test.describe('Owner Management', () => {
 
     await expect(page.getByRole('button', { name: /Add Owner/i })).toBeVisible();
   });
+
+  test('prevents duplicate owner creation', async ({ page }, testInfo) => {
+    // Arrange: Create first owner (should succeed)
+    await page.goto('/owners/new');
+    await page.getByLabel('First Name').fill('Duplicate');
+    await page.getByLabel('Last Name').fill('Test');
+    await page.getByLabel('Address').fill('456 Oak St');
+    await page.getByLabel('City').fill('Testville');
+    await page.getByLabel('Telephone').fill('5551234567');
+    await page.getByRole('button', { name: /Add Owner/i }).click();
+
+    // Assert: First owner created successfully (redirected to details)
+    await expect(page).toHaveURL(/\/owners\/\d+/);
+
+    // Act: Attempt to create duplicate owner
+    await page.goto('/owners/new');
+    await page.getByLabel('First Name').fill('Duplicate');
+    await page.getByLabel('Last Name').fill('Test');
+    await page.getByLabel('Address').fill('456 Oak St');
+    await page.getByLabel('City').fill('Testville');
+    await page.getByLabel('Telephone').fill('5551234567');
+    await page.getByRole('button', { name: /Add Owner/i }).click();
+
+    // Assert: Form shows error, no redirect
+    await expect(page).toHaveURL('/owners/new');
+    await expect(page.getByText(/already exists/i)).toBeVisible();
+
+    // Capture proof artifact
+    await page.screenshot({
+      path: testInfo.outputPath('owner-duplicate-error.png'),
+      fullPage: true
+    });
+  });
 });

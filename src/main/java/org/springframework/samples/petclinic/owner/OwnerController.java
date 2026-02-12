@@ -77,7 +77,21 @@ class OwnerController {
 	@PostMapping("/owners/new")
 	public String processCreationForm(@Valid Owner owner, BindingResult result, RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
-			redirectAttributes.addFlashAttribute("error", "There was an error in creating the owner.");
+			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
+		}
+
+		// Trim names for duplicate check and apply to entity
+		String trimmedFirstName = owner.getFirstName().trim();
+		String trimmedLastName = owner.getLastName().trim();
+		owner.setFirstName(trimmedFirstName);
+		owner.setLastName(trimmedLastName);
+
+		// Check for duplicate owner
+		Optional<Owner> existingOwner = this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone(
+				trimmedFirstName, trimmedLastName, owner.getTelephone());
+
+		if (existingOwner.isPresent()) {
+			result.rejectValue("firstName", "owner.duplicate");
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
 

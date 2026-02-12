@@ -248,4 +248,75 @@ class OwnerControllerTests {
 			.andExpect(flash().attributeExists("error"));
 	}
 
+	@Test
+	void testProcessCreationFormWithDuplicateOwner() throws Exception {
+		// Arrange: Mock repository to return an existing owner when duplicate check is
+		// called
+		Owner existingOwner = new Owner();
+		existingOwner.setId(99);
+		existingOwner.setFirstName("John");
+		existingOwner.setLastName("Smith");
+		existingOwner.setAddress("456 Oak St");
+		existingOwner.setCity("Springfield");
+		existingOwner.setTelephone("5555551234");
+
+		given(this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone("John", "Smith", "5555551234"))
+			.willReturn(Optional.of(existingOwner));
+
+		// Act & Assert: POST to /owners/new with duplicate owner data
+		mockMvc
+			.perform(post("/owners/new").param("firstName", "John")
+				.param("lastName", "Smith")
+				.param("address", "123 Main St")
+				.param("city", "Boston")
+				.param("telephone", "5555551234"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrors("owner", "firstName"))
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+	}
+
+	@Test
+	void testProcessCreationFormWithUniqueOwner() throws Exception {
+		// Arrange: Mock repository to return empty (no duplicate)
+		given(this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone("Jane", "Doe", "5559998888"))
+			.willReturn(Optional.empty());
+
+		// Act & Assert: POST to /owners/new with unique owner data
+		mockMvc
+			.perform(post("/owners/new").param("firstName", "Jane")
+				.param("lastName", "Doe")
+				.param("address", "789 Elm St")
+				.param("city", "Seattle")
+				.param("telephone", "5559998888"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + null));
+	}
+
+	@Test
+	void testProcessCreationFormDuplicateCaseInsensitive() throws Exception {
+		// Arrange: Mock repository to return existing owner even with different case
+		Owner existingOwner = new Owner();
+		existingOwner.setId(100);
+		existingOwner.setFirstName("John");
+		existingOwner.setLastName("Smith");
+		existingOwner.setAddress("456 Oak St");
+		existingOwner.setCity("Springfield");
+		existingOwner.setTelephone("5555551234");
+
+		// Mock should return existing owner when called with trimmed lowercase names
+		given(this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone("john", "smith", "5555551234"))
+			.willReturn(Optional.of(existingOwner));
+
+		// Act & Assert: POST with lowercase names - should detect duplicate
+		mockMvc
+			.perform(post("/owners/new").param("firstName", "john")
+				.param("lastName", "smith")
+				.param("address", "999 Different St")
+				.param("city", "Austin")
+				.param("telephone", "5555551234"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrors("owner", "firstName"))
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+	}
+
 }

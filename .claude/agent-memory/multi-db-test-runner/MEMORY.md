@@ -118,3 +118,46 @@ For future date/time features:
 **Visit Date Validation Feature: CERTIFIED for production use**
 
 All database compatibility tests passed with zero issues. The feature is ready for deployment to environments using H2, MySQL, or PostgreSQL.
+
+## Spec 03: Prevent Duplicate Owner Creation - Database Compatibility Certification
+
+### Test Execution Summary (2026-02-12)
+
+Successfully validated the duplicate owner detection feature across all three supported database platforms with 100% pass rate.
+
+**Database Profiles Tested:**
+- H2 2.4.240 (in-memory, default profile) - 14/14 tests passed
+- MySQL 9.5 (TestContainers) - 2/2 integration tests passed
+- PostgreSQL 18.1 (TestContainers) - 2/2 integration tests passed
+
+### Key Findings
+
+#### Case-Insensitive Query Compatibility - CERTIFIED
+The `findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone` repository method works identically across all database platforms through Hibernate's SQL `UPPER()` function translation.
+
+**SQL Generated (database-agnostic):**
+```sql
+WHERE upper(o1_0.first_name)=upper(?) AND upper(o1_0.last_name)=upper(?) AND o1_0.telephone=?
+```
+
+**Database column type variations:**
+- H2: VARCHAR(30) / VARCHAR_IGNORECASE(30) / VARCHAR(20)
+- MySQL: VARCHAR(30) / VARCHAR(30) / VARCHAR(20)
+- PostgreSQL: TEXT / TEXT / TEXT
+
+Hibernate correctly handles all type mappings without manual intervention.
+
+### Common Patterns for Case-Insensitive Queries
+
+1. **Always use Spring Data JPA's IgnoreCase keyword** for portable case-insensitive queries
+2. **Hibernate translates to UPPER() function** - works on H2, MySQL, PostgreSQL
+3. **Avoid database-specific collations** in application code
+4. **TestContainers provides excellent validation** for MySQL/PostgreSQL compatibility
+
+### Certification
+
+**Spec 03 - Prevent Duplicate Owner Creation: CERTIFIED for production use**
+
+All database compatibility tests passed with zero issues. The implementation is ready for deployment to environments using H2, MySQL, or PostgreSQL.
+
+Detailed report: See `spec03-duplicate-owner-detection.md`

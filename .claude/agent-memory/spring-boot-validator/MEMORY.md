@@ -4,32 +4,55 @@
 
 ### Bean Validation Annotations
 - Project uses Jakarta Bean Validation (jakarta.validation.constraints)
-- Custom messages use inline strings: `@FutureOrPresent(message = "Visit date cannot be in the past")`
+- Visit date validation uses message keys: `@NotNull(message = "{visit.date.required}")` and `@FutureOrPresent(message = "{visit.date.future}")`
 - Owner entity uses message keys for i18n: `@Pattern(regexp = "\\d{10}", message = "{telephone.invalid}")`
-- Both patterns are valid, but message keys preferred for consistency
+- Message keys pattern is consistently applied across codebase
 
 ### Common Annotations Used
 - `@NotBlank` - String fields requiring non-empty values (Person.firstName, Person.lastName, Visit.description)
 - `@Pattern` - Regex validation with custom messages (Owner.telephone)
 - `@FutureOrPresent` - Temporal validation for dates (Visit.date)
+- `@NotNull` - Non-null field validation (Visit.date)
 
 ### Annotation Placement
 - Validation annotations placed directly on entity fields
-- Order: JPA annotations (@Column) → Formatting (@DateTimeFormat) → Validation (@NotBlank, @FutureOrPresent)
+- Order: JPA annotations (@Column) → Formatting (@DateTimeFormat) → Validation (@NotNull, @FutureOrPresent)
 - Consistent pattern across Owner, Person, and Visit entities
 
 ### Entity Validation Testing
 - Validation tests in ValidatorTests.java using LocalValidatorFactoryBean
 - Test pattern: Arrange (create entity) → Act (validator.validate()) → Assert (constraintViolations)
-- Tests verify both valid and invalid scenarios
-- Multiple test cases for temporal validation (past, present, future)
+- Tests verify both valid and invalid scenarios (past, present, future, null)
+- Multiple test cases for temporal validation
+
+## Visit Date Validation Architecture (Reviewed 2026-02-12)
+
+### Implementation Layers
+1. **Entity Layer**: Visit.java with @NotNull and @FutureOrPresent using message keys
+2. **Controller Layer**: VisitController with @Valid and BindingResult for error handling
+3. **View Layer**: Thymeleaf fragments/inputField.html renders errors inline
+4. **I18n Layer**: messages.properties with visit.date.required and visit.date.future keys
+5. **Test Layers**: ValidatorTests (unit), VisitControllerTests (web), E2E Playwright tests
+
+### Architecture Strengths
+- Clean separation of validation concerns (entity → controller → view)
+- Message keys enable internationalization (en, es, de, ko, fa, pt, tr, ru)
+- Constructor-based dependency injection in VisitController
+- @InitBinder prevents id field tampering
+- Comprehensive test coverage across all layers
+
+### No Global Exception Handler
+- Project does NOT use @ControllerAdvice for validation
+- Uses Spring MVC default behavior: returns form view with BindingResult errors
+- This is acceptable for simple form validation scenarios
+- Thymeleaf th:errors automatically displays field errors
 
 ## Critical Issues to Watch
 
 ### Transaction Management
 - Visit entity does NOT need @Transactional (it's an entity, not a service)
 - Controller uses @Valid to trigger validation before persistence
-- OwnerRepository.save() handles transactional context
+- OwnerRepository.save() handles transactional context via cascade
 
 ### Entity Relationships
 - Visit has no explicit relationship to Pet in entity (unidirectional from Pet → Visit)
@@ -37,6 +60,13 @@
 - Owner.addVisit() method adds visit to pet collection (cascade saves it)
 
 ### Testing Coverage
-- ValidatorTests covers Visit date validation scenarios comprehensively
-- VisitControllerTests validates controller behavior but doesn't test date validation edge cases
+- ValidatorTests covers Visit date validation comprehensively (past, today, future, null)
+- VisitControllerTests validates controller behavior with date validation tests
+- E2E Playwright tests validate browser behavior for past/present/future dates
 - Tests follow TDD pattern with clear Arrange-Act-Assert structure
+
+## Configuration Notes
+- spring-boot-starter-validation dependency provides Hibernate Validator
+- spring.messages.basename=messages/messages enables i18n
+- spring.jpa.open-in-view=false follows best practice
+- No custom validation configuration needed

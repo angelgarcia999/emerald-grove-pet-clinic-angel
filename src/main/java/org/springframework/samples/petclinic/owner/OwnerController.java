@@ -91,7 +91,7 @@ class OwnerController {
 				trimmedFirstName, trimmedLastName, owner.getTelephone());
 
 		if (existingOwner.isPresent()) {
-			result.rejectValue("firstName", "duplicate", "{owner.duplicate}");
+			result.rejectValue("firstName", "owner.duplicate");
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
 

@@ -28,7 +28,14 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          DIFF=$(cat diff.txt)
+          # Limit diff size to prevent "Argument list too long" error
+          DIFF=$(head -c 50000 diff.txt)
+
+          # Check if diff was truncated
+          FULL_SIZE=$(wc -c < diff.txt)
+          if [ "$FULL_SIZE" -gt 50000 ]; then
+            DIFF="${DIFF}\n\n⚠️ Note: Diff was truncated (${FULL_SIZE} bytes, showing first 50000 bytes)"
+          fi
 
           # Create JSON payload
           cat > payload.json <<'EOF'

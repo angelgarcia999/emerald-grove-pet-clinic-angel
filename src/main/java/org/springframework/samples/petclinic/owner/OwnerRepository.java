@@ -59,4 +59,20 @@ public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 	 */
 	Optional<Owner> findById(Integer id);
 
+	/**
+	 * Find an {@link Owner} by first name, last name, and telephone number.
+	 * <p>
+	 * This method performs a case-insensitive search for owners matching the exact
+	 * combination of first name, last name, and telephone. It is primarily used for
+	 * duplicate detection when creating or updating owner records.
+	 * </p>
+	 * @param firstName the first name to search for (case-insensitive)
+	 * @param lastName the last name to search for (case-insensitive)
+	 * @param telephone the telephone number to search for (exact match)
+	 * @return an {@link Optional} containing the matching {@link Owner} if found, or an
+	 * empty {@link Optional} if no match exists
+	 */
+	Optional<Owner> findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone(String firstName, String lastName,
+			String telephone);
+
 }

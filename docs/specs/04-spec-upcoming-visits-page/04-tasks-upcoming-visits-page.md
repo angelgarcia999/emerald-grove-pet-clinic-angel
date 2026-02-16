@@ -97,7 +97,7 @@
 
 ---
 
-### [x] 3.0 Presentation Layer - Create View Template and Navigation (TDD with HTML Verification)
+### [~] 3.0 Presentation Layer - Create View Template and Navigation (TDD with HTML Verification)
 
 **Purpose**: Create the Thymeleaf template `upcomingVisits.html` that displays upcoming visits in a table format following existing design patterns. Add navigation menu item and i18n message keys.
 

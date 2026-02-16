@@ -16,6 +16,7 @@
 
 package org.springframework.samples.petclinic.owner;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -55,6 +56,9 @@ class VisitControllerTests {
 
 	@MockitoBean
 	private OwnerRepository owners;
+
+	@MockitoBean
+	private VisitRepository visits;
 
 	@BeforeEach
 	void init() {
@@ -122,6 +126,29 @@ class VisitControllerTests {
 				.param("description", "Future visit"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
+	}
+
+	@Test
+	void testShowUpcomingVisitsWithDefaultDays() throws Exception {
+		given(this.visits.findUpcomingVisits(any(LocalDate.class), any(LocalDate.class)))
+			.willReturn(java.util.Collections.emptyList());
+
+		mockMvc.perform(get("/visits/upcoming"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("visits"))
+			.andExpect(model().attributeExists("days"))
+			.andExpect(view().name("visits/upcomingVisits"));
+	}
+
+	@Test
+	void testShowUpcomingVisitsWithCustomDays() throws Exception {
+		given(this.visits.findUpcomingVisits(any(LocalDate.class), any(LocalDate.class)))
+			.willReturn(java.util.Collections.emptyList());
+
+		mockMvc.perform(get("/visits/upcoming").param("days", "14"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("days", 14))
+			.andExpect(view().name("visits/upcomingVisits"));
 	}
 
 }

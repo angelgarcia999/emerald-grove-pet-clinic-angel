@@ -67,7 +67,7 @@
 
 ---
 
-### [x] 2.0 Controller Layer - Implement Endpoint with Validation (TDD RED-GREEN-REFACTOR)
+### [~] 2.0 Controller Layer - Implement Endpoint with Validation (TDD RED-GREEN-REFACTOR)
 
 **Purpose**: Add the `/visits/upcoming` GET endpoint to `VisitController` that accepts a `days` parameter, calls the repository, and prepares model data for the view. Includes validation for invalid parameters.
 

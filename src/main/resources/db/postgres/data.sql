@@ -58,3 +58,8 @@ SELECT setval(pg_get_serial_sequence('types', 'id'), COALESCE((SELECT MAX(id) FR
 SELECT setval(pg_get_serial_sequence('owners', 'id'), COALESCE((SELECT MAX(id) FROM owners), 0));
 SELECT setval(pg_get_serial_sequence('pets', 'id'), COALESCE((SELECT MAX(id) FROM pets), 0));
 SELECT setval(pg_get_serial_sequence('visits', 'id'), COALESCE((SELECT MAX(id) FROM visits), 0));
+
+-- Future-dated visits for testing upcoming visits feature
+INSERT INTO visits VALUES (default, 1, CURRENT_DATE + INTERVAL '3 days', 'annual checkup');
+INSERT INTO visits VALUES (default, 7, CURRENT_DATE + INTERVAL '5 days', 'vaccination booster');
+INSERT INTO visits VALUES (default, 8, CURRENT_DATE + INTERVAL '6 days', 'dental cleaning');

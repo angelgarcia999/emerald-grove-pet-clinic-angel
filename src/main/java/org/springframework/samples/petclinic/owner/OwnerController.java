@@ -129,15 +129,20 @@ class OwnerController {
 		}
 
 		// multiple owners found
-		return addPaginationModel(page, model, ownersResults);
+		return addPaginationModel(page, model, ownersResults, lastName);
 	}
 
 	private String addPaginationModel(int page, Model model, Page<Owner> paginated) {
+		return addPaginationModel(page, model, paginated, "");
+	}
+
+	private String addPaginationModel(int page, Model model, Page<Owner> paginated, String lastName) {
 		List<Owner> listOwners = paginated.getContent();
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", paginated.getTotalPages());
 		model.addAttribute("totalItems", paginated.getTotalElements());
 		model.addAttribute("listOwners", listOwners);
+		model.addAttribute("lastName", lastName);
 		return "owners/ownersList";
 	}
 

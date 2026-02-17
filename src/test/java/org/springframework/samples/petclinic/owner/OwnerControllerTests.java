@@ -319,4 +319,50 @@ class OwnerControllerTests {
 			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
 	}
 
+	@Test
+	void testProcessFindFormPreservesLastNameInModel() throws Exception {
+		// Arrange: Create multiple owners to trigger pagination view
+		Owner owner1 = new Owner();
+		owner1.setId(1);
+		owner1.setFirstName("George");
+		owner1.setLastName("Franklin");
+
+		Owner owner2 = new Owner();
+		owner2.setId(2);
+		owner2.setFirstName("Betty");
+		owner2.setLastName("Franklin");
+
+		Page<Owner> tasks = new PageImpl<>(List.of(owner1, owner2));
+		when(this.owners.findByLastNameStartingWith(eq("Franklin"), any(Pageable.class))).thenReturn(tasks);
+
+		// Act & Assert: lastName should be preserved in model for pagination links
+		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("lastName", "Franklin"))
+			.andExpect(view().name("owners/ownersList"));
+	}
+
+	@Test
+	void testProcessFindFormPreservesEmptyLastNameInModel() throws Exception {
+		// Arrange: Create multiple owners for empty search (list all)
+		Owner owner1 = new Owner();
+		owner1.setId(1);
+		owner1.setFirstName("George");
+		owner1.setLastName("Franklin");
+
+		Owner owner2 = new Owner();
+		owner2.setId(2);
+		owner2.setFirstName("Betty");
+		owner2.setLastName("Davis");
+
+		Page<Owner> tasks = new PageImpl<>(List.of(owner1, owner2));
+		when(this.owners.findByLastNameStartingWith(eq(""), any(Pageable.class))).thenReturn(tasks);
+
+		// Act & Assert: Empty lastName should be preserved in model
+		mockMvc.perform(get("/owners?page=1"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("lastName", ""))
+			.andExpect(view().name("owners/ownersList"));
+	}
+
 }

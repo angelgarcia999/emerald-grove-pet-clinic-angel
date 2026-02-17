@@ -213,6 +213,25 @@ class ClinicServiceTests {
 	}
 
 	@Test
+	void shouldFindVetsBySpecialty() {
+		Page<Vet> vetsWithRadiology = this.vets.findBySpecialtiesName("radiology", pageable);
+		assertThat(vetsWithRadiology.getContent()).hasSize(2); // vets 2 and 5 have
+																// radiology
+
+		Page<Vet> vetsWithSurgery = this.vets.findBySpecialtiesName("surgery", pageable);
+		assertThat(vetsWithSurgery.getContent()).hasSize(2); // vets 3 and 4 have surgery
+
+		Page<Vet> vetsWithDentistry = this.vets.findBySpecialtiesName("dentistry", pageable);
+		assertThat(vetsWithDentistry.getContent()).hasSize(1); // vet 3 has dentistry
+	}
+
+	@Test
+	void shouldReturnEmptyPageForNonExistentSpecialty() {
+		Page<Vet> vetsWithNonExistent = this.vets.findBySpecialtiesName("cardiology", pageable);
+		assertThat(vetsWithNonExistent.getContent()).isEmpty();
+	}
+
+	@Test
 	@Transactional
 	void shouldAddNewVisitForPet() {
 		Optional<Owner> optionalOwner = this.owners.findById(6);

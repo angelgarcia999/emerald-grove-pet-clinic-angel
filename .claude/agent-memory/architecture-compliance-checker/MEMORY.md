@@ -104,3 +104,92 @@ This application uses a **simplified layered architecture** without a traditiona
 - **Test Coverage**: 4 integration tests in `ClinicServiceTests.java` (lines 251-334)
 - **Input Normalization**: Caller responsibility (controller trims whitespace)
 - **Reference Quality**: Exemplifies clean repository pattern for future implementations
+
+### Owner Duplicate Prevention Feature (Audited 2026-02-13)
+
+**COMPREHENSIVE AUDIT: FULLY COMPLIANT**
+
+See detailed analysis: [audit-2026-02-13.md](./audit-2026-02-13.md)
+
+**Key Findings:**
+- ✅ Zero layer boundary violations
+- ✅ Pure repository pattern (no business logic in data layer)
+- ✅ Proper validation separation (entity vs. controller)
+- ✅ Rich domain model (Owner has addPet(), getPet(), addVisit() methods)
+- ✅ 16/16 web tests passing, 4 integration tests, 1 E2E test
+- ✅ Works identically on H2, MySQL, PostgreSQL
+- ✅ Internationalized messages in 8 languages
+- ✅ SOLID principles adhered to
+- ✅ Constructor injection everywhere (no field injection)
+
+**Validation Pattern Confirmed:**
+- Entity layer: JSR-303 annotations define rules (@NotBlank, @Pattern)
+- Controller layer: @Valid triggers validation, BindingResult handles errors
+- No tight coupling between layers
+- Follows Dependency Inversion Principle
+
+**Reference Implementation:**
+This feature is now a reference example for:
+- Spring Data JPA query derivation
+- Duplicate detection patterns
+- Controller validation orchestration
+- Bean validation integration
+- Test pyramid (unit → integration → E2E)
+
+### Architecture Compliance Audit (2026-02-13)
+
+**Layer Boundaries - FULLY COMPLIANT:**
+- All controllers properly inject repositories directly (no service layer by design)
+- `OwnerController`: Injects `OwnerRepository` (line 53)
+- `PetController`: Injects `OwnerRepository` + `PetTypeRepository` (lines 52, 54)
+- `VisitController`: Injects `OwnerRepository` + `VisitRepository` (lines 47, 49)
+- `VetController`: Injects `VetRepository` (line 38)
+
+**Entity Design - STRONG DOMAIN MODEL:**
+- Entities contain business behavior (NOT anemic)
+- `Owner.java`: Methods getPet(), addPet(), addVisit() encapsulate domain logic
+- `Pet.java`: addVisit() method manages relationship
+- `Vet.java`: addSpecialty(), getNrOfSpecialties() provide domain behavior
+- Proper use of JPA relationships with cascade and fetch strategies
+
+**Dependency Injection - BEST PRACTICES:**
+- Constructor injection universally applied (immutable dependencies)
+- No field injection (avoiding Spring anti-pattern)
+- Proper use of `@Controller`, `@Repository` stereotypes
+
+**Package Organization - FEATURE-BASED:**
+- `owner/` package: Owner, Pet, Visit, PetType + controllers + repositories
+- `vet/` package: Vet, Specialty + controller + repository
+- `model/` package: Base classes (BaseEntity, Person, NamedEntity)
+- `system/` package: Configuration (CacheConfiguration, WebConfiguration)
+
+**Spring Boot Patterns - EXEMPLARY:**
+- Spring Data JPA query derivation (OwnerRepository methods)
+- `@Cacheable` on repository methods (VetRepository)
+- `@Transactional(readOnly = true)` on read operations
+- Proper use of `Optional<T>` for nullable returns
+- Bean Validation (JSR-303) integrated properly
+
+### Upcoming Visits Feature Audit (2026-02-16)
+
+**Status: ✅ FULLY COMPLIANT** - See [detailed audit](./audit-upcoming-visits-2026-02-16.md)
+
+**Key Patterns Verified:**
+- `VisitRepository.findUpcomingVisits()` - Pure JPQL query with date range filtering
+- `VisitController.showUpcomingVisits()` - Proper Controller → Repository delegation
+- Date calculations in controller (LocalDate.now(), plusDays()) are acceptable for query parameter preparation
+- JPQL navigates Pet → Visit relationship (Visit has no direct Pet reference - unidirectional)
+- Integration tests cover E2E HTTP and repository layers (UpcomingVisitsIntegrationTests.java)
+- View uses Thymeleaf best practices (i18n, conditional rendering, date formatting)
+
+**Date Calculations in Controller - ACCEPTABLE PATTERN:**
+- LocalDate.now() - System time retrieval (not business logic)
+- plusDays(days) - Query parameter preparation (presentation layer responsibility)
+- Rationale: Controller prepares input for repository, repository handles data access
+
+**Reference Quality:**
+- Date range queries with BETWEEN operator and ORDER BY
+- JOIN navigation for unidirectional relationships (SELECT v FROM Pet p JOIN p.visits v)
+- @Transactional(readOnly = true) optimization
+- Request parameter defaults (@RequestParam(defaultValue = "7"))
+- List-based view rendering with conditional empty state

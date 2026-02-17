@@ -136,3 +136,85 @@
 - This is acceptable for simple applications but not ideal for complex business logic
 - When reviewing validation: check if business rules should be in service layer
 - RedirectAttributes pattern: Only use with redirects, NOT form view returns
+
+## Repository @Transactional Anti-pattern Found (2026-02-13, UPDATED 2026-02-16)
+- VetRepository.java (lines 44, 54): INCORRECT use of @Transactional on repository interface
+- VisitRepository.java (line 42): INCORRECT use of @Transactional on repository interface (NEW)
+- @Transactional should be on service layer, not repository layer
+- Repository methods inherit transactional behavior from calling context
+- Read-only transactions are appropriate but should be at service level
+- Spring Data JPA automatically provides transaction management for repository methods
+- Anti-pattern is consistent across multiple repositories in this codebase
+- Recommendation: Extract business logic to service layer with @Transactional
+
+## Upcoming Visits Feature Review (2026-02-16)
+
+### Repository Layer - VisitRepository.java
+**STRENGTHS:**
+- Correct use of Spring Data JPA Repository interface (extends Repository<Visit, Integer>)
+- Custom JPQL query with @Query annotation follows best practices
+- Query optimization: Uses JOIN from Pet to Visit (Pet → visits) to handle unidirectional relationship
+- Named parameters @Param("start"), @Param("end") for type safety and readability
+- Proper ORDER BY clause (date ASC) for sorted results
+- Comprehensive JavaDoc explaining relationship navigation strategy
+
+**ISSUE FOUND:**
+- Line 42: @Transactional(readOnly = true) on repository method (ANTI-PATTERN)
+- Should be on service layer, not repository interface
+- Spring Data JPA provides automatic transaction management for repository methods
+- Pattern matches existing anti-pattern in VetRepository.java
+
+### Controller Layer - VisitController.java
+**STRENGTHS:**
+- Correct use of @Controller (not @RestController) for MVC view rendering
+- Constructor-based dependency injection (lines 51-54) - preferred over @Autowired
+- @InitBinder security best practice (lines 56-59) prevents id field tampering
+- showUpcomingVisits() method (lines 115-128) follows MVC pattern correctly
+- @RequestParam with defaultValue="7" provides sensible default
+- Model attributes use Map<String, Object> pattern consistent with codebase
+- Returns view name "visits/upcomingVisits" for Thymeleaf template resolution
+
+**DESIGN CONSIDERATION:**
+- Business logic (LocalDate calculations) directly in controller
+- Acceptable for simple applications without service layer
+- Consistent with existing pattern (Owner/Pet controllers also lack service layer)
+
+### View Layer - upcomingVisits.html
+**STRENGTHS:**
+- Proper Thymeleaf namespace declaration and layout fragment usage
+- I18n message keys for all user-facing text (#{visits.upcoming.title}, etc.)
+- Conditional rendering with th:if="${visits.isEmpty()}" for empty state
+- Proper use of Thymeleaf temporal formatting: ${#temporals.format(visit.date, 'yyyy-MM-dd')}
+- Consistent with project's Liatrio styling conventions (liatrio-section, liatrio-table-card)
+- Accessible table structure with proper thead/tbody
+
+### Test Coverage - EXCELLENT TDD COMPLIANCE
+**VisitRepositoryTests.java:**
+- @DataJpaTest for repository layer testing (isolated data layer)
+- Three test scenarios: empty result, date range filtering, ordering verification
+- Test data factories (createTestOwner, createTestPet) for reusable test setup
+- Clear TDD phase documentation in comments (RED, GREEN, REFACTOR)
+- @Transactional on test methods for automatic rollback
+- Uses AssertJ fluent assertions
+
+**VisitControllerTests.java:**
+- @WebMvcTest(VisitController.class) for web layer isolation
+- MockMvc for simulating HTTP requests without server overhead
+- @MockitoBean for mocking dependencies (OwnerRepository, VisitRepository)
+- Two test cases for upcoming visits endpoint (default days, custom days)
+- Tests verify model attributes and view name resolution
+
+**UpcomingVisitsIntegrationTests.java:**
+- @SpringBootTest(webEnvironment = RANDOM_PORT) for full application context
+- End-to-end test with RestTemplate hitting actual HTTP endpoint
+- Verifies response status, HTML content, and data.sql fixture data
+- Direct repository query test for date range filtering logic
+- Tests validate integration between all layers
+
+### JPA Relationship Pattern
+**CRITICAL OBSERVATION:**
+- Visit entity has NO explicit Pet reference (unidirectional relationship)
+- Pet entity has @OneToMany with CascadeType.ALL and EAGER fetch (line 56 in Pet.java)
+- VisitRepository query navigates FROM Pet JOIN p.visits v (correct approach)
+- This pattern prevents Visit entity from having circular dependency
+- Consistent with existing architecture (Owner → Pet → Visit cascade)

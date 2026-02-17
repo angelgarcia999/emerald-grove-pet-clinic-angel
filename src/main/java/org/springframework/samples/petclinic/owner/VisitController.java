@@ -15,6 +15,8 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -43,8 +46,11 @@ class VisitController {
 
 	private final OwnerRepository owners;
 
-	public VisitController(OwnerRepository owners) {
+	private final VisitRepository visits;
+
+	public VisitController(OwnerRepository owners, VisitRepository visits) {
 		this.owners = owners;
+		this.visits = visits;
 	}
 
 	@InitBinder
@@ -60,8 +66,13 @@ class VisitController {
 	 * @return Pet
 	 */
 	@ModelAttribute("visit")
-	public Visit loadPetWithVisit(@PathVariable("ownerId") int ownerId, @PathVariable("petId") int petId,
-			Map<String, Object> model) {
+	public Visit loadPetWithVisit(@PathVariable(name = "ownerId", required = false) Integer ownerId,
+			@PathVariable(name = "petId", required = false) Integer petId, Map<String, Object> model) {
+		// Skip this method for endpoints that don't have ownerId/petId path variables
+		if (ownerId == null || petId == null) {
+			return null;
+		}
+
 		Optional<Owner> optionalOwner = owners.findById(ownerId);
 		Owner owner = optionalOwner.orElseThrow(() -> new IllegalArgumentException(
 				"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
@@ -99,6 +110,21 @@ class VisitController {
 		this.owners.save(owner);
 		redirectAttributes.addFlashAttribute("message", "Your visit has been booked");
 		return "redirect:/owners/{ownerId}";
+	}
+
+	@GetMapping("/visits/upcoming")
+	public String showUpcomingVisits(@RequestParam(defaultValue = "7") int days, Map<String, Object> model) {
+		LocalDate startDate = LocalDate.now();
+		LocalDate endDate = startDate.plusDays(days);
+
+		List<Visit> upcomingVisits = this.visits.findUpcomingVisits(startDate, endDate);
+
+		model.put("visits", upcomingVisits);
+		model.put("days", days);
+		model.put("startDate", startDate);
+		model.put("endDate", endDate);
+
+		return "visits/upcomingVisits";
 	}
 
 }

@@ -51,3 +51,8 @@ INSERT INTO visits VALUES (default, 7, '2013-01-01', 'rabies shot');
 INSERT INTO visits VALUES (default, 8, '2013-01-02', 'rabies shot');
 INSERT INTO visits VALUES (default, 8, '2013-01-03', 'neutered');
 INSERT INTO visits VALUES (default, 7, '2013-01-04', 'spayed');
+
+-- Future-dated visits for testing upcoming visits feature
+INSERT INTO visits VALUES (default, 2, DATEADD('DAY', 3, CURRENT_DATE()), 'annual checkup');
+INSERT INTO visits VALUES (default, 3, DATEADD('DAY', 5, CURRENT_DATE()), 'vaccination booster');
+INSERT INTO visits VALUES (default, 4, DATEADD('DAY', 6, CURRENT_DATE()), 'dental cleaning');

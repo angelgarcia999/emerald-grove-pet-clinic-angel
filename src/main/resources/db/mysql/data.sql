@@ -51,3 +51,8 @@ INSERT IGNORE INTO visits VALUES (1, 7, '2010-03-04', 'rabies shot');
 INSERT IGNORE INTO visits VALUES (2, 8, '2011-03-04', 'rabies shot');
 INSERT IGNORE INTO visits VALUES (3, 8, '2009-06-04', 'neutered');
 INSERT IGNORE INTO visits VALUES (4, 7, '2008-09-04', 'spayed');
+
+-- Future-dated visits for testing upcoming visits feature
+INSERT INTO visits VALUES (default, 2, DATE_ADD(CURDATE(), INTERVAL 3 DAY), 'annual checkup');
+INSERT INTO visits VALUES (default, 3, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 'vaccination booster');
+INSERT INTO visits VALUES (default, 4, DATE_ADD(CURDATE(), INTERVAL 6 DAY), 'dental cleaning');

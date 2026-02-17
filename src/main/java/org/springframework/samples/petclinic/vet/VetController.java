@@ -37,32 +37,43 @@ class VetController {
 
 	private final VetRepository vetRepository;
 
-	public VetController(VetRepository vetRepository) {
+	private final SpecialtyRepository specialtyRepository;
+
+	public VetController(VetRepository vetRepository, SpecialtyRepository specialtyRepository) {
 		this.vetRepository = vetRepository;
+		this.specialtyRepository = specialtyRepository;
 	}
 
 	@GetMapping("/vets.html")
-	public String showVetList(@RequestParam(defaultValue = "1") int page, Model model) {
+	public String showVetList(@RequestParam(defaultValue = "1") int page,
+			@RequestParam(required = false) String specialty, Model model) {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
 		// objects so it is simpler for Object-Xml mapping
 		Vets vets = new Vets();
-		Page<Vet> paginated = findPaginated(page);
+		Page<Vet> paginated = findPaginated(page, specialty);
 		vets.getVetList().addAll(paginated.toList());
-		return addPaginationModel(page, paginated, model);
+		return addPaginationModel(page, paginated, model, specialty);
 	}
 
-	private String addPaginationModel(int page, Page<Vet> paginated, Model model) {
+	private String addPaginationModel(int page, Page<Vet> paginated, Model model, String specialty) {
 		List<Vet> listVets = paginated.getContent();
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", paginated.getTotalPages());
 		model.addAttribute("totalItems", paginated.getTotalElements());
 		model.addAttribute("listVets", listVets);
+		model.addAttribute("specialties", specialtyRepository.findAll());
+		if (specialty != null && !specialty.isEmpty()) {
+			model.addAttribute("specialty", specialty);
+		}
 		return "vets/vetList";
 	}
 
-	private Page<Vet> findPaginated(int page) {
+	private Page<Vet> findPaginated(int page, String specialty) {
 		int pageSize = 5;
 		Pageable pageable = PageRequest.of(page - 1, pageSize);
+		if (specialty != null && !specialty.isEmpty()) {
+			return vetRepository.findBySpecialtiesName(specialty, pageable);
+		}
 		return vetRepository.findAll(pageable);
 	}
 

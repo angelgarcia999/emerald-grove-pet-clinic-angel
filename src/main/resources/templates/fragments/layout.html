@@ -70,6 +70,23 @@
             <span th:text="#{error}">Error</span>
           </li>
 
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="fa fa-globe" aria-hidden="true"></span>
+              <span th:text="#{language.selector}">Language</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+              <li><a class="dropdown-item" th:href="@{''(lang=en)}" th:text="#{language.en}">English</a></li>
+              <li><a class="dropdown-item" th:href="@{''(lang=de)}" th:text="#{language.de}">German</a></li>
+              <li><a class="dropdown-item" th:href="@{''(lang=es)}" th:text="#{language.es}">Spanish</a></li>
+              <li><a class="dropdown-item" th:href="@{''(lang=fa)}" th:text="#{language.fa}">Persian</a></li>
+              <li><a class="dropdown-item" th:href="@{''(lang=ko)}" th:text="#{language.ko}">Korean</a></li>
+              <li><a class="dropdown-item" th:href="@{''(lang=pt)}" th:text="#{language.pt}">Portuguese</a></li>
+              <li><a class="dropdown-item" th:href="@{''(lang=ru)}" th:text="#{language.ru}">Russian</a></li>
+              <li><a class="dropdown-item" th:href="@{''(lang=tr)}" th:text="#{language.tr}">Turkish</a></li>
+            </ul>
+          </li>
+
         </ul>
       </div>
     </div>

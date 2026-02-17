@@ -51,6 +51,9 @@ class VetControllerTests {
 	@MockitoBean
 	private VetRepository vets;
 
+	@MockitoBean
+	private SpecialtyRepository specialties;
+
 	private Vet james() {
 		Vet james = new Vet();
 		james.setFirstName("James");
@@ -77,6 +80,17 @@ class VetControllerTests {
 		given(this.vets.findAll(any(Pageable.class)))
 			.willReturn(new PageImpl<Vet>(Lists.newArrayList(james(), helen())));
 
+		// Mock specialty repository
+		Specialty radiology = new Specialty();
+		radiology.setId(1);
+		radiology.setName("radiology");
+		Specialty surgery = new Specialty();
+		surgery.setId(2);
+		surgery.setName("surgery");
+		Specialty dentistry = new Specialty();
+		dentistry.setId(3);
+		dentistry.setName("dentistry");
+		given(this.specialties.findAll()).willReturn(Lists.newArrayList(radiology, surgery, dentistry));
 	}
 
 	@Test
@@ -95,6 +109,26 @@ class VetControllerTests {
 			.andExpect(status().isOk());
 		actions.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.vetList[0].id").value(1));
+	}
+
+	@Test
+	void testShowVetListWithSpecialtyFilter() throws Exception {
+		given(this.vets.findBySpecialtiesName(any(String.class), any(Pageable.class)))
+			.willReturn(new PageImpl<Vet>(Lists.newArrayList(helen())));
+
+		mockMvc.perform(MockMvcRequestBuilders.get("/vets.html?page=1&specialty=radiology"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("listVets"))
+			.andExpect(model().attribute("specialty", "radiology"))
+			.andExpect(view().name("vets/vetList"));
+	}
+
+	@Test
+	void testShowVetListWithEmptySpecialtyFilter() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/vets.html?page=1&specialty="))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("listVets"))
+			.andExpect(view().name("vets/vetList"));
 	}
 
 }

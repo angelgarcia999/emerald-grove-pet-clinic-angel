@@ -94,6 +94,11 @@ class OwnerControllerTests {
 		given(this.owners.findByLastNameStartingWith(eq("Franklin"), any(Pageable.class)))
 			.willReturn(new PageImpl<>(List.of(george)));
 
+		// Mock new multi-criteria search method for backward compatibility
+		given(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(eq("Franklin"), eq(""), eq(""),
+				any(Pageable.class)))
+			.willReturn(new PageImpl<>(List.of(george)));
+
 		given(this.owners.findById(TEST_OWNER_ID)).willReturn(Optional.of(george));
 		Visit visit = new Visit();
 		visit.setDate(LocalDate.now());
@@ -142,14 +147,18 @@ class OwnerControllerTests {
 	@Test
 	void testProcessFindFormSuccess() throws Exception {
 		Page<Owner> tasks = new PageImpl<>(List.of(george(), new Owner()));
-		when(this.owners.findByLastNameStartingWith(anyString(), any(Pageable.class))).thenReturn(tasks);
+		when(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(anyString(), anyString(), anyString(),
+				any(Pageable.class)))
+			.thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1")).andExpect(status().isOk()).andExpect(view().name("owners/ownersList"));
 	}
 
 	@Test
 	void testProcessFindFormByLastName() throws Exception {
 		Page<Owner> tasks = new PageImpl<>(List.of(george()));
-		when(this.owners.findByLastNameStartingWith(eq("Franklin"), any(Pageable.class))).thenReturn(tasks);
+		when(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(eq("Franklin"), eq(""), eq(""),
+				any(Pageable.class)))
+			.thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
@@ -158,7 +167,9 @@ class OwnerControllerTests {
 	@Test
 	void testProcessFindFormNoOwnersFound() throws Exception {
 		Page<Owner> tasks = new PageImpl<>(List.of());
-		when(this.owners.findByLastNameStartingWith(eq("Unknown Surname"), any(Pageable.class))).thenReturn(tasks);
+		when(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(eq("Unknown Surname"), eq(""), eq(""),
+				any(Pageable.class)))
+			.thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1").param("lastName", "Unknown Surname"))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeHasFieldErrors("owner", "lastName"))
@@ -333,7 +344,9 @@ class OwnerControllerTests {
 		owner2.setLastName("Franklin");
 
 		Page<Owner> tasks = new PageImpl<>(List.of(owner1, owner2));
-		when(this.owners.findByLastNameStartingWith(eq("Franklin"), any(Pageable.class))).thenReturn(tasks);
+		when(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(eq("Franklin"), eq(""), eq(""),
+				any(Pageable.class)))
+			.thenReturn(tasks);
 
 		// Act & Assert: lastName should be preserved in model for pagination links
 		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin"))
@@ -356,13 +369,231 @@ class OwnerControllerTests {
 		owner2.setLastName("Davis");
 
 		Page<Owner> tasks = new PageImpl<>(List.of(owner1, owner2));
-		when(this.owners.findByLastNameStartingWith(eq(""), any(Pageable.class))).thenReturn(tasks);
+		when(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(eq(""), eq(""), eq(""),
+				any(Pageable.class)))
+			.thenReturn(tasks);
 
 		// Act & Assert: Empty lastName should be preserved in model
 		mockMvc.perform(get("/owners?page=1"))
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("lastName", ""))
 			.andExpect(view().name("owners/ownersList"));
+	}
+
+	// ========================
+	// Multi-Criteria Search Controller Tests (Task 2.0)
+	// RED Phase: Tests 2.1-2.4
+	// ========================
+
+	@Test
+	void shouldFindOwnersByMultipleCriteria() throws Exception {
+		// Arrange: Mock repository to return owners matching all three criteria
+		Owner owner1 = new Owner();
+		owner1.setId(1);
+		owner1.setFirstName("George");
+		owner1.setLastName("Franklin");
+		owner1.setCity("Madison");
+		owner1.setTelephone("6085551023");
+
+		Owner owner2 = new Owner();
+		owner2.setId(2);
+		owner2.setFirstName("Betty");
+		owner2.setLastName("Franklin");
+		owner2.setCity("Madison");
+		owner2.setTelephone("6085551749");
+
+		Page<Owner> results = new PageImpl<>(List.of(owner1, owner2));
+		when(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(eq("Franklin"), eq("Madison"), eq(""),
+				any(Pageable.class)))
+			.thenReturn(results);
+
+		// Act & Assert: Search with lastName and city parameters
+		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin").param("city", "Madison"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("listOwners", hasSize(2)))
+			.andExpect(model().attribute("lastName", "Franklin"))
+			.andExpect(model().attribute("city", "Madison"))
+			.andExpect(view().name("owners/ownersList"));
+	}
+
+	@Test
+	void shouldReturnNotFoundForNoResults() throws Exception {
+		// Arrange: Mock repository to return empty results
+		Page<Owner> emptyResults = new PageImpl<>(List.of());
+		when(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(eq("NonExistent"), eq("UnknownCity"),
+				eq(""), any(Pageable.class)))
+			.thenReturn(emptyResults);
+
+		// Act & Assert: Search with criteria that return no results
+		mockMvc
+			.perform(get("/owners?page=1").param("lastName", "NonExistent")
+				.param("city", "UnknownCity")
+				.param("telephone", ""))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrors("owner", "lastName"))
+			.andExpect(model().attributeHasFieldErrorCode("owner", "lastName", "notFound"))
+			.andExpect(view().name("owners/findOwners"));
+	}
+
+	@Test
+	void shouldRedirectWhenSingleOwnerFound() throws Exception {
+		// Arrange: Mock repository to return single owner
+		Owner owner = new Owner();
+		owner.setId(5);
+		owner.setFirstName("John");
+		owner.setLastName("Smith");
+		owner.setCity("Boston");
+		owner.setTelephone("5551234567");
+
+		Page<Owner> singleResult = new PageImpl<>(List.of(owner));
+		when(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(eq("Smith"), eq("Boston"),
+				eq("5551234567"), any(Pageable.class)))
+			.thenReturn(singleResult);
+
+		// Act & Assert: Search that returns exactly one owner should redirect to
+		// details
+		mockMvc
+			.perform(get("/owners?page=1").param("lastName", "Smith")
+				.param("city", "Boston")
+				.param("telephone", "5551234567"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + 5));
+	}
+
+	@Test
+	void shouldShowPaginatedResultsForMultipleOwners() throws Exception {
+		// Arrange: Mock repository to return multiple owners
+		Owner owner1 = new Owner();
+		owner1.setId(1);
+		owner1.setFirstName("John");
+		owner1.setLastName("Davis");
+		owner1.setCity("Madison");
+		owner1.setTelephone("6085551111");
+
+		Owner owner2 = new Owner();
+		owner2.setId(2);
+		owner2.setFirstName("Jane");
+		owner2.setLastName("Davis");
+		owner2.setCity("Madison");
+		owner2.setTelephone("6085552222");
+
+		Owner owner3 = new Owner();
+		owner3.setId(3);
+		owner3.setFirstName("Bob");
+		owner3.setLastName("Davis");
+		owner3.setCity("Madison");
+		owner3.setTelephone("6085553333");
+
+		Page<Owner> multipleResults = new PageImpl<>(List.of(owner1, owner2, owner3));
+		when(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(eq("Davis"), eq("Madison"), eq(""),
+				any(Pageable.class)))
+			.thenReturn(multipleResults);
+
+		// Act & Assert: Search with multiple results should show paginated list
+		mockMvc
+			.perform(get("/owners?page=1").param("lastName", "Davis").param("city", "Madison").param("telephone", ""))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("listOwners", hasSize(3)))
+			.andExpect(model().attribute("lastName", "Davis"))
+			.andExpect(model().attribute("city", "Madison"))
+			.andExpect(model().attribute("telephone", ""))
+			.andExpect(view().name("owners/ownersList"));
+	}
+
+	// ========================
+	// CSV Export Controller Tests (Task 4.0)
+	// RED Phase: Tests 4.1-4.3
+	// ========================
+
+	@Test
+	void shouldExportCurrentPageToCSV() throws Exception {
+		// Arrange: Mock repository to return owners for CSV export
+		Owner owner1 = new Owner();
+		owner1.setId(1);
+		owner1.setFirstName("George");
+		owner1.setLastName("Franklin");
+		owner1.setCity("Madison");
+		owner1.setTelephone("6085551023");
+		owner1.setAddress("110 W. Liberty St.");
+
+		Owner owner2 = new Owner();
+		owner2.setId(2);
+		owner2.setFirstName("Betty");
+		owner2.setLastName("Davis");
+		owner2.setCity("Boston");
+		owner2.setTelephone("6085551749");
+		owner2.setAddress("638 Cardinal Ave.");
+
+		Page<Owner> results = new PageImpl<>(List.of(owner1, owner2));
+		when(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(eq(""), eq(""), eq(""),
+				any(Pageable.class)))
+			.thenReturn(results);
+
+		// Act & Assert: Export endpoint should return CSV with correct headers and
+		// content
+		mockMvc.perform(get("/owners/export").param("page", "1"))
+			.andExpect(status().isOk())
+			.andExpect(header().string("Content-Type", "text/csv"))
+			.andExpect(header().string("Content-Disposition", "attachment; filename=\"owners.csv\""))
+			.andExpect(content()
+				.string(org.hamcrest.Matchers.containsString("ID,First Name,Last Name,Address,City,Telephone")))
+			.andExpect(content().string(org.hamcrest.Matchers.containsString("1,George,Franklin")))
+			.andExpect(content().string(org.hamcrest.Matchers.containsString("2,Betty,Davis")));
+	}
+
+	@Test
+	void shouldEscapeCSVSpecialCharacters() throws Exception {
+		// Arrange: Create owners with CSV injection attack vectors
+		Owner owner1 = new Owner();
+		owner1.setId(1);
+		owner1.setFirstName("=SUM(A1:A10)"); // Formula injection
+		owner1.setLastName("Normal");
+		owner1.setCity("+cmd|'/c calc'!A1"); // Command injection
+		owner1.setTelephone("1234567890");
+		owner1.setAddress("@IMPORTXML('https://evil.example.com')"); // XML injection
+
+		Owner owner2 = new Owner();
+		owner2.setId(2);
+		owner2.setFirstName("-2+3+cmd|' /C calc'!A1"); // Minus injection
+		owner2.setLastName("Test");
+		owner2.setCity("Boston");
+		owner2.setTelephone("6085551749");
+		owner2.setAddress("Normal Address");
+
+		Page<Owner> results = new PageImpl<>(List.of(owner1, owner2));
+		when(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(eq(""), eq(""), eq(""),
+				any(Pageable.class)))
+			.thenReturn(results);
+
+		// Act & Assert: CSV should escape dangerous characters with single quote prefix
+		mockMvc.perform(get("/owners/export").param("page", "1"))
+			.andExpect(status().isOk())
+			.andExpect(content().string(org.hamcrest.Matchers.containsString("'=SUM(A1:A10)"))) // Escaped
+																								// =
+			.andExpect(content().string(org.hamcrest.Matchers.containsString("'+cmd|'/c calc'!A1"))) // Escaped
+																										// +
+			.andExpect(content().string(org.hamcrest.Matchers.containsString("'@IMPORTXML"))) // Escaped
+																								// @
+			.andExpect(content().string(org.hamcrest.Matchers.containsString("'-2+3+cmd"))) // Escaped
+																							// -
+			.andExpect(content().string(org.hamcrest.Matchers.containsString("Normal,"))); // Normal
+																							// values
+																							// not
+																							// escaped
+	}
+
+	@Test
+	void shouldReturnErrorWhenExportingEmptyResults() throws Exception {
+		// Arrange: Mock repository to return empty results
+		Page<Owner> emptyResults = new PageImpl<>(List.of());
+		when(this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(eq(""), eq(""), eq(""),
+				any(Pageable.class)))
+			.thenReturn(emptyResults);
+
+		// Act & Assert: Export with no results should return error or redirect
+		mockMvc.perform(get("/owners/export").param("page", "1"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(redirectedUrl("/owners/find"));
 	}
 
 }

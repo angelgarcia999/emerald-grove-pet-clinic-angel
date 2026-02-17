@@ -36,6 +36,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.validation.Valid;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -49,6 +51,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 class OwnerController {
 
 	private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
+
+	private static final int PAGE_SIZE = 5;
 
 	private final OwnerRepository owners;
 
@@ -106,16 +110,17 @@ class OwnerController {
 	}
 
 	@GetMapping("/owners")
-	public String processFindForm(@RequestParam(defaultValue = "1") int page, Owner owner, BindingResult result,
-			Model model) {
+	public String processFindForm(@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "") String city, @RequestParam(defaultValue = "") String telephone,
+			Owner owner, BindingResult result, Model model) {
 		// allow parameterless GET request for /owners to return all records
 		String lastName = owner.getLastName();
 		if (lastName == null) {
 			lastName = ""; // empty string signifies broadest possible search
 		}
 
-		// find owners by last name
-		Page<Owner> ownersResults = findPaginatedForOwnersLastName(page, lastName);
+		// find owners by multiple criteria
+		Page<Owner> ownersResults = findPaginatedForMultipleCriteria(page, lastName, city, telephone);
 		if (ownersResults.isEmpty()) {
 			// no owners found
 			result.rejectValue("lastName", "notFound", "not found");
@@ -129,27 +134,38 @@ class OwnerController {
 		}
 
 		// multiple owners found
-		return addPaginationModel(page, model, ownersResults, lastName);
+		return addPaginationModel(page, model, ownersResults, lastName, city, telephone);
 	}
 
 	private String addPaginationModel(int page, Model model, Page<Owner> paginated) {
-		return addPaginationModel(page, model, paginated, "");
+		return addPaginationModel(page, model, paginated, "", "", "");
 	}
 
 	private String addPaginationModel(int page, Model model, Page<Owner> paginated, String lastName) {
+		return addPaginationModel(page, model, paginated, lastName, "", "");
+	}
+
+	private String addPaginationModel(int page, Model model, Page<Owner> paginated, String lastName, String city,
+			String telephone) {
 		List<Owner> listOwners = paginated.getContent();
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", paginated.getTotalPages());
 		model.addAttribute("totalItems", paginated.getTotalElements());
 		model.addAttribute("listOwners", listOwners);
 		model.addAttribute("lastName", lastName);
+		model.addAttribute("city", city);
+		model.addAttribute("telephone", telephone);
 		return "owners/ownersList";
 	}
 
 	private Page<Owner> findPaginatedForOwnersLastName(int page, String lastname) {
-		int pageSize = 5;
-		Pageable pageable = PageRequest.of(page - 1, pageSize);
+		Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE);
 		return owners.findByLastNameStartingWith(lastname, pageable);
+	}
+
+	private Page<Owner> findPaginatedForMultipleCriteria(int page, String lastName, String city, String telephone) {
+		Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE);
+		return owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(lastName, city, telephone, pageable);
 	}
 
 	@GetMapping("/owners/{ownerId}/edit")
@@ -190,6 +206,82 @@ class OwnerController {
 				"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
 		mav.addObject(owner);
 		return mav;
+	}
+
+	/**
+	 * Export current page of owner search results to CSV format.
+	 * @param page the current page number
+	 * @param lastName the lastName search parameter
+	 * @param city the city search parameter
+	 * @param telephone the telephone search parameter
+	 * @return ResponseEntity with CSV content and appropriate headers
+	 */
+	@GetMapping("/owners/export")
+	public ResponseEntity<String> exportOwnersToCSV(@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "") String lastName, @RequestParam(defaultValue = "") String city,
+			@RequestParam(defaultValue = "") String telephone) {
+
+		// Fetch owners for current page with search criteria
+		Page<Owner> ownersResults = findPaginatedForMultipleCriteria(page, lastName, city, telephone);
+
+		// Handle empty results - redirect to find page
+		if (ownersResults.isEmpty()) {
+			return ResponseEntity.status(302).header("Location", "/owners/find").build();
+		}
+
+		// Generate CSV content
+		String csvContent = generateCSV(ownersResults.getContent());
+
+		// Set response headers for CSV download
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(HttpHeaders.CONTENT_TYPE, "text/csv");
+		headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"owners.csv\"");
+
+		return ResponseEntity.ok().headers(headers).body(csvContent);
+	}
+
+	/**
+	 * Generate CSV content from a list of owners. Includes CSV injection prevention by
+	 * escaping values that start with =, +, @, or -.
+	 * @param owners the list of owners to export
+	 * @return CSV formatted string
+	 */
+	private String generateCSV(List<Owner> owners) {
+		StringBuilder csv = new StringBuilder();
+
+		// CSV Header
+		csv.append("ID,First Name,Last Name,Address,City,Telephone\n");
+
+		// CSV Data Rows
+		for (Owner owner : owners) {
+			csv.append(owner.getId()).append(",");
+			csv.append(escapeCSVValue(owner.getFirstName())).append(",");
+			csv.append(escapeCSVValue(owner.getLastName())).append(",");
+			csv.append(escapeCSVValue(owner.getAddress())).append(",");
+			csv.append(escapeCSVValue(owner.getCity())).append(",");
+			csv.append(escapeCSVValue(owner.getTelephone())).append("\n");
+		}
+
+		return csv.toString();
+	}
+
+	/**
+	 * Escape CSV values to prevent CSV injection attacks. Values starting with =, +,
+	 * @, or - are prefixed with a single quote.
+	 * @param value the value to escape
+	 * @return escaped value safe for CSV
+	 */
+	private String escapeCSVValue(String value) {
+		if (value == null || value.isEmpty()) {
+			return "";
+		}
+
+		char firstChar = value.charAt(0);
+		if (firstChar == '=' || firstChar == '+' || firstChar == '@' || firstChar == '-') {
+			return "'" + value;
+		}
+
+		return value;
 	}
 
 }

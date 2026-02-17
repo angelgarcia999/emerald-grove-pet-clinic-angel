@@ -352,4 +352,93 @@ class ClinicServiceTests {
 		assertThat(duplicate.get().getFirstName()).isEqualTo("John");
 	}
 
+	// ========================
+	// Multi-Criteria Search Tests (Task 1.0)
+	// RED Phase: Tests 1.1-1.5
+	// ========================
+
+	@Test
+	void shouldFindOwnersByLastNameCityAndTelephone() {
+		// Arrange - Use existing owner (Betty Davis: Sun Prairie, 6085551749)
+		String lastName = "Davis";
+		String city = "Sun Prairie";
+		String telephone = "6085551749";
+
+		// Act - Search by all three criteria
+		Page<Owner> result = this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(lastName, city,
+				telephone, pageable);
+
+		// Assert - Should find Betty Davis
+		assertThat(result.getContent()).hasSize(1);
+		assertThat(result.getContent().get(0).getLastName()).startsWith("Davis");
+		assertThat(result.getContent().get(0).getCity()).isEqualToIgnoringCase("Sun Prairie");
+		assertThat(result.getContent().get(0).getTelephone()).isEqualTo("6085551749");
+	}
+
+	@Test
+	void shouldFindOwnersByLastNameAndCity() {
+		// Arrange - Use existing owner (George Franklin: Madison)
+		String lastName = "Franklin";
+		String city = "Madison";
+		String telephone = "";
+
+		// Act - Search by lastName and city only (telephone empty)
+		Page<Owner> result = this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(lastName, city,
+				telephone, pageable);
+
+		// Assert - Should find George Franklin in Madison
+		assertThat(result.getContent()).hasSizeGreaterThanOrEqualTo(1);
+		assertThat(result.getContent()).allMatch(
+				owner -> owner.getLastName().startsWith("Franklin") && owner.getCity().equalsIgnoreCase("Madison"));
+	}
+
+	@Test
+	void shouldFindOwnersByLastNameAndTelephone() {
+		// Arrange - Use existing owner (Betty Davis: Sun Prairie, 6085551749)
+		String lastName = "Davis";
+		String city = "";
+		String telephone = "6085551749";
+
+		// Act - Search by lastName and telephone only (city empty)
+		Page<Owner> result = this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(lastName, city,
+				telephone, pageable);
+
+		// Assert - Should find Betty Davis
+		assertThat(result.getContent()).hasSize(1);
+		assertThat(result.getContent().get(0).getLastName()).startsWith("Davis");
+		assertThat(result.getContent().get(0).getTelephone()).isEqualTo("6085551749");
+	}
+
+	@Test
+	void shouldIgnoreEmptySearchCriteria() {
+		// Arrange - Empty city and telephone, only lastName provided
+		String lastName = "Davis";
+		String city = "";
+		String telephone = "";
+
+		// Act - Search with lastName only, empty parameters should be ignored
+		Page<Owner> result = this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(lastName, city,
+				telephone, pageable);
+
+		// Assert - Should behave like findByLastNameStartingWith (find all Davis)
+		Page<Owner> expected = this.owners.findByLastNameStartingWith(lastName, pageable);
+		assertThat(result.getTotalElements()).isEqualTo(expected.getTotalElements());
+	}
+
+	@Test
+	void shouldPerformCaseInsensitiveCityMatch() {
+		// Arrange - Use existing owner in Madison with lowercase city parameter
+		String lastName = "Franklin";
+		String city = "madison"; // lowercase
+		String telephone = "";
+
+		// Act - Search with lowercase city
+		Page<Owner> result = this.owners.findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(lastName, city,
+				telephone, pageable);
+
+		// Assert - Should find George Franklin in Madison (case-insensitive match)
+		assertThat(result.getContent()).hasSizeGreaterThanOrEqualTo(1);
+		assertThat(result.getContent()).allMatch(owner -> owner.getCity().equalsIgnoreCase("Madison"));
+	}
+
 }

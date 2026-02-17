@@ -20,6 +20,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Repository class for <code>Owner</code> domain objects. All method names are compliant
@@ -74,5 +76,41 @@ public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 	 */
 	Optional<Owner> findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephone(String firstName, String lastName,
 			String telephone);
+
+	/**
+	 * Find {@link Owner}s by last name, city, and telephone with optional parameters.
+	 * <p>
+	 * This method supports multi-criteria search with AND logic. Empty string parameters
+	 * are treated as "ignore this criterion" and excluded from the query. Last name uses
+	 * "starts with" matching, city is case-insensitive exact match, and telephone is
+	 * exact match.
+	 * </p>
+	 * <p>
+	 * Examples:
+	 * <ul>
+	 * <li>lastName="Smith", city="", telephone="" - finds all owners with lastName
+	 * starting with "Smith"</li>
+	 * <li>lastName="Smith", city="Madison", telephone="" - finds owners with lastName
+	 * starting with "Smith" AND city="Madison"</li>
+	 * <li>lastName="Smith", city="Madison", telephone="6085551023" - finds owners
+	 * matching all three criteria</li>
+	 * </ul>
+	 * </p>
+	 * @param lastName the last name prefix to search for (starts-with matching)
+	 * @param city the city to search for (case-insensitive exact match, empty string to
+	 * ignore)
+	 * @param telephone the telephone number to search for (exact match, empty string to
+	 * ignore)
+	 * @param pageable pagination information
+	 * @return a {@link Page} of matching {@link Owner}s
+	 */
+	@Query("""
+			SELECT o FROM Owner o WHERE
+				LOWER(o.lastName) LIKE LOWER(CONCAT(:lastName, '%'))
+				AND (:city = '' OR LOWER(o.city) = LOWER(:city))
+				AND (:telephone = '' OR o.telephone = :telephone)
+			""")
+	Page<Owner> findByLastNameStartingWithAndCityIgnoreCaseAndTelephone(@Param("lastName") String lastName,
+			@Param("city") String city, @Param("telephone") String telephone, Pageable pageable);
 
 }

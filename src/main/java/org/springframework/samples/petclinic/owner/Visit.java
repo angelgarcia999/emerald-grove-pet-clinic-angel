@@ -20,9 +20,13 @@ import java.time.LocalTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.vet.Vet;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -53,6 +57,10 @@ public class Visit extends BaseEntity {
 
 	@Column(name = "duration_minutes")
 	private Integer durationMinutes;
+
+	@ManyToOne(fetch = FetchType.EAGER, cascade = jakarta.persistence.CascadeType.MERGE)
+	@JoinColumn(name = "vet_id")
+	private Vet vet;
 
 	/**
 	 * Creates a new instance of Visit for the current date with default duration
@@ -92,6 +100,14 @@ public class Visit extends BaseEntity {
 
 	public void setDurationMinutes(Integer durationMinutes) {
 		this.durationMinutes = durationMinutes;
+	}
+
+	public Vet getVet() {
+		return this.vet;
+	}
+
+	public void setVet(Vet vet) {
+		this.vet = vet;
 	}
 
 }

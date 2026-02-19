@@ -21,11 +21,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
+import org.springframework.samples.petclinic.vet.Vet;
+import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -46,6 +50,12 @@ class VisitRepositoryTests {
 
 	@Autowired
 	private PetTypeRepository petTypes;
+
+	@Autowired
+	private VetRepository vets;
+
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	/**
 	 * RED Phase: Test that repository returns empty list when no visits exist in date
@@ -167,6 +177,166 @@ class VisitRepositoryTests {
 
 		assertThat(retrievedVisit.getStartTime()).isEqualTo(LocalTime.of(10, 30));
 		assertThat(retrievedVisit.getDurationMinutes()).isEqualTo(45);
+	}
+
+	/**
+	 * RED Phase: Test that Visit with assigned Vet can be persisted and retrieved with
+	 * eager-loaded vet information.
+	 */
+	@Test
+	@Transactional
+	void shouldSaveAndRetrieveVisitWithAssignedVet() {
+		// Arrange - Create visit with assigned vet
+		Vet vet = vets.findAll().iterator().next();
+		assertThat(vet).isNotNull();
+
+		Owner owner = new Owner();
+		owner.setFirstName("Test");
+		owner.setLastName("Owner");
+		owner.setAddress("123 Test St");
+		owner.setCity("TestCity");
+		owner.setTelephone("1234567890");
+
+		Pet pet = new Pet();
+		pet.setName("TestPet");
+		pet.setBirthDate(LocalDate.now().minusYears(2));
+		pet.setType(petTypes.findAll().iterator().next());
+
+		Visit visit = new Visit();
+		visit.setDate(LocalDate.now().plusDays(1));
+		visit.setStartTime(LocalTime.of(10, 30));
+		visit.setDurationMinutes(30);
+		visit.setDescription("Checkup with vet");
+		visit.setVet(vet);
+
+		owner.addPet(pet);
+		pet.addVisit(visit);
+
+		// Act - Save and retrieve
+		Owner savedOwner = owners.save(owner);
+		owners.flush();
+
+		// Retrieve visit through upcoming visits query
+		LocalDate start = LocalDate.now();
+		LocalDate end = start.plusDays(7);
+		List<Visit> upcomingVisits = visits.findUpcomingVisits(start, end);
+
+		// Assert - Verify vet was persisted and eager-loaded
+		Visit retrievedVisit = upcomingVisits.stream()
+			.filter(v -> v.getDescription().equals("Checkup with vet"))
+			.findFirst()
+			.orElseThrow();
+
+		assertThat(retrievedVisit.getVet()).isNotNull();
+		assertThat(retrievedVisit.getVet().getId()).isEqualTo(vet.getId());
+		assertThat(retrievedVisit.getVet().getLastName()).isEqualTo(vet.getLastName());
+	}
+
+	/**
+	 * RED Phase: Test that Visit can be saved with null vet (backward compatibility).
+	 */
+	@Test
+	@Transactional
+	void shouldAllowNullVetForBackwardCompatibility() {
+		// Arrange - Create visit without vet
+		Owner owner = new Owner();
+		owner.setFirstName("Test");
+		owner.setLastName("Owner");
+		owner.setAddress("123 Test St");
+		owner.setCity("TestCity");
+		owner.setTelephone("1234567890");
+
+		Pet pet = new Pet();
+		pet.setName("TestPet");
+		pet.setBirthDate(LocalDate.now().minusYears(2));
+		pet.setType(petTypes.findAll().iterator().next());
+
+		Visit visit = new Visit();
+		visit.setDate(LocalDate.now().plusDays(1));
+		visit.setStartTime(LocalTime.of(14, 0));
+		visit.setDescription("Visit without vet");
+		// Note: vet is null
+
+		owner.addPet(pet);
+		pet.addVisit(visit);
+
+		// Act - Save
+		Owner savedOwner = owners.save(owner);
+		owners.flush();
+
+		// Retrieve visit
+		LocalDate start = LocalDate.now();
+		LocalDate end = start.plusDays(7);
+		List<Visit> upcomingVisits = visits.findUpcomingVisits(start, end);
+
+		// Assert - Verify null vet is allowed
+		Visit retrievedVisit = upcomingVisits.stream()
+			.filter(v -> v.getDescription().equals("Visit without vet"))
+			.findFirst()
+			.orElseThrow();
+
+		assertThat(retrievedVisit.getVet()).isNull();
+	}
+
+	/**
+	 * RED/GREEN Phase: Test that Visit-Vet relationship is properly configured with
+	 * optional vet (nullable foreign key). The actual cascade DELETE SET NULL behavior is
+	 * defined in database schema and tested through integration tests.
+	 */
+	@Test
+	@Transactional
+	void shouldSupportOptionalVetRelationshipWithProperMapping() {
+		// Arrange - Create visit with vet
+		Vet vet = vets.findAll().iterator().next();
+
+		Owner owner = new Owner();
+		owner.setFirstName("Test");
+		owner.setLastName("Owner");
+		owner.setAddress("123 Test St");
+		owner.setCity("TestCity");
+		owner.setTelephone("1234567890");
+
+		Pet pet = new Pet();
+		pet.setName("TestPet");
+		pet.setBirthDate(LocalDate.now().minusYears(2));
+		pet.setType(petTypes.findAll().iterator().next());
+
+		// Create two visits: one with vet, one without
+		Visit visitWithVet = new Visit();
+		visitWithVet.setDate(LocalDate.now().plusDays(1));
+		visitWithVet.setDescription("Visit with vet");
+		visitWithVet.setVet(vet);
+
+		Visit visitWithoutVet = new Visit();
+		visitWithoutVet.setDate(LocalDate.now().plusDays(2));
+		visitWithoutVet.setDescription("Visit without vet");
+		// vet is null
+
+		owner.addPet(pet);
+		pet.addVisit(visitWithVet);
+		pet.addVisit(visitWithoutVet);
+
+		// Act - Save both visits
+		Owner savedOwner = owners.save(owner);
+		owners.flush();
+
+		// Assert - Verify both visits were saved correctly
+		LocalDate start = LocalDate.now();
+		LocalDate end = start.plusDays(7);
+		List<Visit> upcomingVisits = visits.findUpcomingVisits(start, end);
+
+		Visit retrievedWithVet = upcomingVisits.stream()
+			.filter(v -> v.getDescription().equals("Visit with vet"))
+			.findFirst()
+			.orElseThrow();
+		assertThat(retrievedWithVet.getVet()).isNotNull();
+		assertThat(retrievedWithVet.getVet().getId()).isEqualTo(vet.getId());
+
+		Visit retrievedWithoutVet = upcomingVisits.stream()
+			.filter(v -> v.getDescription().equals("Visit without vet"))
+			.findFirst()
+			.orElseThrow();
+		assertThat(retrievedWithoutVet.getVet()).isNull();
 	}
 
 	/**

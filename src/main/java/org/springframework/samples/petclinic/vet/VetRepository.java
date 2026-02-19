@@ -65,4 +65,19 @@ public interface VetRepository extends Repository<Vet, Integer> {
 	@Transactional(readOnly = true)
 	Page<Vet> findBySpecialtiesName(String specialtyName, Pageable pageable) throws DataAccessException;
 
+	/**
+	 * Save a <code>Vet</code> to the data store.
+	 * @param vet the <code>Vet</code> to save
+	 * @return the saved <code>Vet</code>
+	 * @throws DataAccessException
+	 */
+	Vet save(Vet vet) throws DataAccessException;
+
+	/**
+	 * Delete a <code>Vet</code> from the data store.
+	 * @param vet the <code>Vet</code> to delete
+	 * @throws DataAccessException
+	 */
+	void delete(Vet vet) throws DataAccessException;
+
 }

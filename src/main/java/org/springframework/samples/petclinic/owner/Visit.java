@@ -16,6 +16,7 @@
 package org.springframework.samples.petclinic.owner;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.samples.petclinic.model.BaseEntity;
@@ -46,11 +47,19 @@ public class Visit extends BaseEntity {
 	@NotBlank
 	private String description;
 
+	@Column(name = "start_time")
+	@DateTimeFormat(pattern = "HH:mm")
+	private LocalTime startTime;
+
+	@Column(name = "duration_minutes")
+	private Integer durationMinutes;
+
 	/**
-	 * Creates a new instance of Visit for the current date
+	 * Creates a new instance of Visit for the current date with default duration
 	 */
 	public Visit() {
 		this.date = LocalDate.now();
+		this.durationMinutes = 30;
 	}
 
 	public LocalDate getDate() {
@@ -67,6 +76,22 @@ public class Visit extends BaseEntity {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public LocalTime getStartTime() {
+		return this.startTime;
+	}
+
+	public void setStartTime(LocalTime startTime) {
+		this.startTime = startTime;
+	}
+
+	public Integer getDurationMinutes() {
+		return this.durationMinutes;
+	}
+
+	public void setDurationMinutes(Integer durationMinutes) {
+		this.durationMinutes = durationMinutes;
 	}
 
 }

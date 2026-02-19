@@ -47,12 +47,13 @@ INSERT INTO pets VALUES (default, 'Freddy', '2010-03-09', 5, 9);
 INSERT INTO pets VALUES (default, 'Lucky', '2010-06-24', 2, 10);
 INSERT INTO pets VALUES (default, 'Sly', '2012-06-08', 1, 10);
 
-INSERT INTO visits VALUES (default, 7, '2013-01-01', 'rabies shot');
-INSERT INTO visits VALUES (default, 8, '2013-01-02', 'rabies shot');
-INSERT INTO visits VALUES (default, 8, '2013-01-03', 'neutered');
-INSERT INTO visits VALUES (default, 7, '2013-01-04', 'spayed');
+-- Past visits (id, pet_id, visit_date, description, start_time, duration_minutes, vet_id)
+INSERT INTO visits VALUES (default, 7, '2013-01-01', 'rabies shot', '09:30', 30, 1);
+INSERT INTO visits VALUES (default, 8, '2013-01-02', 'rabies shot', '10:00', 30, 2);
+INSERT INTO visits VALUES (default, 8, '2013-01-03', 'neutered', '14:30', 60, 3);
+INSERT INTO visits VALUES (default, 7, '2013-01-04', 'spayed', '11:00', 45, 1);
 
 -- Future-dated visits for testing upcoming visits feature
-INSERT INTO visits VALUES (default, 2, DATEADD('DAY', 3, CURRENT_DATE()), 'annual checkup');
-INSERT INTO visits VALUES (default, 3, DATEADD('DAY', 5, CURRENT_DATE()), 'vaccination booster');
-INSERT INTO visits VALUES (default, 4, DATEADD('DAY', 6, CURRENT_DATE()), 'dental cleaning');
+INSERT INTO visits VALUES (default, 2, DATEADD('DAY', 3, CURRENT_DATE()), 'annual checkup', '09:00', 30, 1);
+INSERT INTO visits VALUES (default, 3, DATEADD('DAY', 5, CURRENT_DATE()), 'vaccination booster', '10:30', 30, 2);
+INSERT INTO visits VALUES (default, 4, DATEADD('DAY', 6, CURRENT_DATE()), 'dental cleaning', '15:00', 45, 3);

@@ -193,3 +193,40 @@ This feature is now a reference example for:
 - @Transactional(readOnly = true) optimization
 - Request parameter defaults (@RequestParam(defaultValue = "7"))
 - List-based view rendering with conditional empty state
+
+### UI Enhancements Feature Audit (2026-02-17)
+
+**Status: ✅ FULLY COMPLIANT** - Zero violations detected
+
+**Features Audited:**
+1. Language Selector (WebConfiguration i18n)
+2. Owner Search Filter Preservation (OwnerController)
+3. Veterinarian Specialty Filter (VetController + SpecialtyRepository)
+
+**Key Patterns Verified:**
+- `SpecialtyRepository.findAll()` - Pure read-only repository (NEW component)
+- `VetRepository.findBySpecialtiesName()` - Spring Data query derivation with pagination
+- `VetController` - Constructor injection of VetRepository + SpecialtyRepository
+- `OwnerController.addPaginationModel()` - Stateless filter preservation via model attributes
+- `WebConfiguration` - Proper Spring MVC i18n configuration (SessionLocaleResolver + LocaleChangeInterceptor)
+
+**Architecture Quality:**
+- ✅ Zero layer boundary violations (Controllers → Repositories only)
+- ✅ Constructor injection (no field injection)
+- ✅ Proper @Transactional(readOnly = true) usage
+- ✅ Feature-based package organization maintained
+- ✅ No business logic in controllers (presentation logic only)
+- ✅ Rich domain model (Vet.addSpecialty(), getNrOfSpecialties())
+- ✅ Test coverage: VetControllerTests, WebConfigurationTests
+
+**Spring Data Query Derivation:**
+- `findBySpecialtiesName(String, Pageable)` - Automatic JOIN generation
+- Navigates ManyToMany relationship (Vet → Specialties → Name)
+- Returns Page<Vet> with pagination support
+- Zero custom JPQL required (naming convention handles it)
+
+**Reference Quality:**
+- SpecialtyRepository exemplifies minimal repository interface pattern
+- VetController specialty filtering demonstrates proper query delegation
+- Filter preservation via model attributes (no session state, horizontally scalable)
+- WebConfiguration demonstrates textbook Spring MVC configuration

@@ -18,6 +18,7 @@ package org.springframework.samples.petclinic.owner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -115,6 +116,57 @@ class VisitRepositoryTests {
 			.findFirst()
 			.orElseThrow();
 		assertThat(firstVisit.getDescription()).isEqualTo("Earlier visit");
+	}
+
+	/**
+	 * RED Phase: Test that Visit with start_time and duration_minutes can be persisted
+	 * and retrieved.
+	 */
+	@Test
+	@Transactional
+	void shouldPersistAndRetrieveVisitWithTimeFields() {
+		// Arrange - Create visit with time fields
+		Owner owner = new Owner();
+		owner.setFirstName("Test");
+		owner.setLastName("Owner");
+		owner.setAddress("123 Test St");
+		owner.setCity("TestCity");
+		owner.setTelephone("1234567890");
+
+		Pet pet = new Pet();
+		pet.setName("TestPet");
+		pet.setBirthDate(LocalDate.now().minusYears(2));
+		pet.setType(petTypes.findAll().iterator().next());
+
+		Visit visit = new Visit();
+		visit.setDate(LocalDate.now().plusDays(1));
+		visit.setStartTime(LocalTime.of(10, 30));
+		visit.setDurationMinutes(45);
+		visit.setDescription("Appointment with time");
+
+		owner.addPet(pet);
+		pet.addVisit(visit);
+
+		// Act - Save and retrieve
+		Owner savedOwner = owners.save(owner);
+		Integer visitId = savedOwner.getPets().iterator().next().getVisits().iterator().next().getId();
+
+		// Clear persistence context to force database round-trip
+		owners.flush();
+
+		// Retrieve visit through upcoming visits query
+		LocalDate start = LocalDate.now();
+		LocalDate end = start.plusDays(7);
+		List<Visit> upcomingVisits = visits.findUpcomingVisits(start, end);
+
+		// Assert - Verify time fields were persisted
+		Visit retrievedVisit = upcomingVisits.stream()
+			.filter(v -> v.getDescription().equals("Appointment with time"))
+			.findFirst()
+			.orElseThrow();
+
+		assertThat(retrievedVisit.getStartTime()).isEqualTo(LocalTime.of(10, 30));
+		assertThat(retrievedVisit.getDurationMinutes()).isEqualTo(45);
 	}
 
 	/**

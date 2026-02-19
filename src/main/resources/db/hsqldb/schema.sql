@@ -55,10 +55,15 @@ ALTER TABLE pets ADD CONSTRAINT fk_pets_types FOREIGN KEY (type_id) REFERENCES t
 CREATE INDEX pets_name ON pets (name);
 
 CREATE TABLE visits (
-  id          INTEGER IDENTITY PRIMARY KEY,
-  pet_id      INTEGER,
-  visit_date  DATE,
-  description VARCHAR(255)
+  id               INTEGER IDENTITY PRIMARY KEY,
+  pet_id           INTEGER,
+  visit_date       DATE,
+  description      VARCHAR(255),
+  start_time       TIME,
+  duration_minutes INTEGER DEFAULT 30,
+  vet_id           INTEGER
 );
 ALTER TABLE visits ADD CONSTRAINT fk_visits_pets FOREIGN KEY (pet_id) REFERENCES pets (id);
+ALTER TABLE visits ADD CONSTRAINT fk_visits_vets FOREIGN KEY (vet_id) REFERENCES vets (id) ON DELETE SET NULL;
 CREATE INDEX visits_pet_id ON visits (pet_id);
+CREATE INDEX visits_vet_id ON visits (vet_id);

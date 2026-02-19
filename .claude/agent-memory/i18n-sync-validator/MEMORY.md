@@ -78,3 +78,25 @@ These should be flagged and translated when found.
 - Format: `key=value` (no spaces around `=`)
 - Preserve comments and blank lines
 - Handle multi-line values with backslash continuation
+
+## Recently Validated Keys (2026-02-17)
+
+### Language Selector Keys - All 8 Files Synchronized
+All language selector keys are present and fully translated in all 8 language files:
+- `language.selector` - Present in all files with proper translations
+- `language.en` through `language.tr` (9 keys total) - All present and translated
+
+### Vet Specialty Filter Keys - All 8 Files Synchronized
+All specialty filter keys present and fully translated:
+- `vet.specialty.filter` - Present in all files with context-appropriate translations
+- `vet.specialty.all` - Present in all files with proper translations
+
+### Template Usage - All Keys Properly Referenced
+- `layout.html`: Uses all 9 language keys via `#{language.selector}` through `#{language.tr}`
+- `vetList.html`: Uses both `#{vet.specialty.filter}` and `#{vet.specialty.all}` with Thymeleaf
+- `ownersList.html`: No specialty filter keys (correctly scoped to vet page only)
+
+### Test Status
+- `I18nPropertiesSyncTest` passes with 2 tests (Failures: 0)
+- No missing keys detected
+- All 84 keys in base file present in all language files

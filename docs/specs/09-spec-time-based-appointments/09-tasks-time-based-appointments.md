@@ -105,7 +105,7 @@
 
 ---
 
-### [ ] 3.0 Enhanced Booking Form with Time and Vet Selection (TDD)
+### [~] 3.0 Enhanced Booking Form with Time and Vet Selection (TDD)
 
 #### 3.0 Proof Artifact(s)
 

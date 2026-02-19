@@ -596,4 +596,19 @@ class OwnerControllerTests {
 			.andExpect(redirectedUrl("/owners/find"));
 	}
 
+	// ========================
+	// 404 Error Handling Tests (Task 1.0)
+	// RED Phase: Test 1.1
+	// ========================
+
+	@Test
+	void testShowOwnerNotFound() throws Exception {
+		// Arrange: Mock repository to return empty Optional for non-existent owner
+		int nonExistentOwnerId = 999999;
+		given(this.owners.findById(nonExistentOwnerId)).willReturn(Optional.empty());
+
+		// Act & Assert: GET request to /owners/999999 should return 404 status code
+		mockMvc.perform(get("/owners/{ownerId}", nonExistentOwnerId)).andExpect(status().isNotFound());
+	}
+
 }

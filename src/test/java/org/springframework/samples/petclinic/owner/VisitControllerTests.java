@@ -68,6 +68,9 @@ class VisitControllerTests {
 	@MockitoBean
 	private VetRepository vets;
 
+	@MockitoBean
+	private BusinessHoursValidator businessHoursValidator;
+
 	@BeforeEach
 	void init() {
 		Owner owner = new Owner();
@@ -75,6 +78,7 @@ class VisitControllerTests {
 		owner.addPet(pet);
 		pet.setId(TEST_PET_ID);
 		given(this.owners.findById(TEST_OWNER_ID)).willReturn(Optional.of(owner));
+		given(this.businessHoursValidator.supports(any(Class.class))).willReturn(true);
 	}
 
 	@Test

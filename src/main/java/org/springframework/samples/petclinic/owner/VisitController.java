@@ -51,15 +51,20 @@ class VisitController {
 
 	private final VetRepository vets;
 
-	public VisitController(OwnerRepository owners, VisitRepository visits, VetRepository vets) {
+	private final BusinessHoursValidator businessHoursValidator;
+
+	public VisitController(OwnerRepository owners, VisitRepository visits, VetRepository vets,
+			BusinessHoursValidator businessHoursValidator) {
 		this.owners = owners;
 		this.visits = visits;
 		this.vets = vets;
+		this.businessHoursValidator = businessHoursValidator;
 	}
 
-	@InitBinder
+	@InitBinder("visit")
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
+		dataBinder.addValidators(businessHoursValidator);
 	}
 
 	/**

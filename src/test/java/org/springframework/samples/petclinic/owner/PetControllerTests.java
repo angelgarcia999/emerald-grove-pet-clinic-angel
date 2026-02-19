@@ -208,4 +208,30 @@ class PetControllerTests {
 
 	}
 
+	@Test
+	void testShowPetNotFound() throws Exception {
+		// Mock owner with no pets
+		Owner ownerWithNoPets = new Owner();
+		given(this.owners.findById(TEST_OWNER_ID)).willReturn(Optional.of(ownerWithNoPets));
+
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, 999999))
+			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void testShowPetBelongsToDifferentOwner() throws Exception {
+		// Mock owner without the requested pet ID
+		Owner owner = new Owner();
+		Pet existingPet = new Pet();
+		existingPet.setId(TEST_PET_ID);
+		existingPet.setName("existing-pet");
+		owner.addPet(existingPet);
+		given(this.owners.findById(TEST_OWNER_ID)).willReturn(Optional.of(owner));
+
+		// Request a pet ID that doesn't belong to this owner
+		int differentPetId = 999999;
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, differentPetId))
+			.andExpect(status().isNotFound());
+	}
+
 }

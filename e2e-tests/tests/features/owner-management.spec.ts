@@ -76,25 +76,28 @@ test.describe('Owner Management', () => {
   });
 
   test('prevents duplicate owner creation', async ({ page }, testInfo) => {
+    // Use factory to generate unique owner data
+    const owner = createOwner();
+
     // Arrange: Create first owner (should succeed)
     await page.goto('/owners/new');
-    await page.getByLabel('First Name').fill('Duplicate');
-    await page.getByLabel('Last Name').fill('Test');
-    await page.getByLabel('Address').fill('456 Oak St');
-    await page.getByLabel('City').fill('Testville');
-    await page.getByLabel('Telephone').fill('5551234567');
+    await page.getByLabel('First Name').fill(owner.firstName);
+    await page.getByLabel('Last Name').fill(owner.lastName);
+    await page.getByLabel('Address').fill(owner.address);
+    await page.getByLabel('City').fill(owner.city);
+    await page.getByLabel('Telephone').fill(owner.telephone);
     await page.getByRole('button', { name: /Add Owner/i }).click();
 
     // Assert: First owner created successfully (redirected to details)
     await expect(page).toHaveURL(/\/owners\/\d+/);
 
-    // Act: Attempt to create duplicate owner
+    // Act: Attempt to create duplicate owner with exact same data
     await page.goto('/owners/new');
-    await page.getByLabel('First Name').fill('Duplicate');
-    await page.getByLabel('Last Name').fill('Test');
-    await page.getByLabel('Address').fill('456 Oak St');
-    await page.getByLabel('City').fill('Testville');
-    await page.getByLabel('Telephone').fill('5551234567');
+    await page.getByLabel('First Name').fill(owner.firstName);
+    await page.getByLabel('Last Name').fill(owner.lastName);
+    await page.getByLabel('Address').fill(owner.address);
+    await page.getByLabel('City').fill(owner.city);
+    await page.getByLabel('Telephone').fill(owner.telephone);
     await page.getByRole('button', { name: /Add Owner/i }).click();
 
     // Assert: Form shows error, no redirect

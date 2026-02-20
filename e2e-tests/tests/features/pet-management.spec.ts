@@ -41,6 +41,8 @@ test.describe('Pet Management', () => {
 
     await page.locator('input#date').fill(visitDateStr);
     await page.locator('input#description').fill('Annual checkup');
+    await page.locator('select#startTime').selectOption('11:00');
+    await page.locator('select#vet\\.id').selectOption('1');
     await page.screenshot({ path: testInfo.outputPath('visit-add-form-filled.png'), fullPage: true });
     await page.getByRole('button', { name: /Add Visit/i }).click();
 

@@ -34,6 +34,8 @@ test.describe('Visit Scheduling', () => {
     const description = `E2E visit ${Date.now()}`;
     await visitPage.fillVisitDate(visitDate);
     await visitPage.fillDescription(description);
+    await visitPage.selectTime('10:00');
+    await visitPage.selectVet('1');
 
     await page.screenshot({ path: testInfo.outputPath('visit-scheduling-form.png'), fullPage: true });
 
@@ -115,6 +117,8 @@ test.describe('Visit Scheduling', () => {
     const description = `E2E visit today ${Date.now()}`;
     await visitPage.fillVisitDate(today);
     await visitPage.fillDescription(description);
+    await visitPage.selectTime('14:00');
+    await visitPage.selectVet('2');
 
     await visitPage.submit();
 
@@ -160,6 +164,8 @@ test.describe('Visit Scheduling', () => {
 
     await visitPage.fillVisitDate(futureDateStr);
     await visitPage.fillDescription(description);
+    await visitPage.selectTime('09:30');
+    await visitPage.selectVet('3');
 
     await visitPage.submit();
 

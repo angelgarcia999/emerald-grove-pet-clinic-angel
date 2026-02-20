@@ -43,8 +43,15 @@ test.describe('Pet Management', () => {
     await page.locator('input#description').fill('Annual checkup');
     await page.locator('select#startTime').selectOption('11:00');
     await page.locator('select#vet\\.id').selectOption('1');
+
+    // Wait a moment for form to be ready
+    await page.waitForTimeout(500);
+
     await page.screenshot({ path: testInfo.outputPath('visit-add-form-filled.png'), fullPage: true });
     await page.getByRole('button', { name: /Add Visit/i }).click();
+
+    // Wait for navigation after form submission
+    await page.waitForLoadState('networkidle');
 
     await expect(page.getByRole('heading', { name: /Pets and Visits/i })).toBeVisible();
     await expect(petRow.getByRole('cell', { name: visitDateStr, exact: true })).toBeVisible();

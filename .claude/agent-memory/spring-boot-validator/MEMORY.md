@@ -137,14 +137,16 @@
 - When reviewing validation: check if business rules should be in service layer
 - RedirectAttributes pattern: Only use with redirects, NOT form view returns
 
-## Repository @Transactional Anti-pattern Found (2026-02-13, UPDATED 2026-02-16)
-- VetRepository.java (lines 44, 54): INCORRECT use of @Transactional on repository interface
-- VisitRepository.java (line 42): INCORRECT use of @Transactional on repository interface (NEW)
+## Repository @Transactional Anti-pattern Found (2026-02-13, UPDATED 2026-02-17)
+- VetRepository.java (lines 44, 54, 65): INCORRECT use of @Transactional on repository interface
+- VisitRepository.java (line 42): INCORRECT use of @Transactional on repository interface
+- SpecialtyRepository.java (line 35): INCORRECT use of @Transactional on repository interface (NEW 2026-02-17)
+- **CONTRAST**: OwnerRepository.java has NO @Transactional annotations (CORRECT pattern)
 - @Transactional should be on service layer, not repository layer
 - Repository methods inherit transactional behavior from calling context
 - Read-only transactions are appropriate but should be at service level
 - Spring Data JPA automatically provides transaction management for repository methods
-- Anti-pattern is consistent across multiple repositories in this codebase
+- Anti-pattern is consistent across 3 of 4 repositories in this codebase
 - Recommendation: Extract business logic to service layer with @Transactional
 
 ## Upcoming Visits Feature Review (2026-02-16)
@@ -196,6 +198,33 @@
 - Clear TDD phase documentation in comments (RED, GREEN, REFACTOR)
 - @Transactional on test methods for automatic rollback
 - Uses AssertJ fluent assertions
+
+## UI Enhancements Validation (Spec 05) - CERTIFIED 2026-02-17
+**Comprehensive validation report:** See `ui-enhancements-validation.md`
+
+### Key Findings Summary
+**EXCELLENT IMPLEMENTATION** - Spring Boot Compliance Score: 85/100
+
+**Strengths:**
+- WebConfiguration.java: Perfect i18n setup with LocaleResolver and LocaleChangeInterceptor
+- VetController.java: Excellent pagination + specialty filtering implementation
+- OwnerController.java: Strong duplicate validation with proper BindingResult handling
+- Constructor-based dependency injection throughout all controllers
+- Correct @Controller usage (not @RestController for views)
+- @InitBinder security pattern prevents id field tampering
+- OwnerRepository.java: NO @Transactional (correct pattern - shows awareness of proper layering)
+
+**Critical Issues:**
+- ❌ VetRepository.java (lines 44, 54, 65): @Transactional(readOnly = true) anti-pattern
+- ❌ SpecialtyRepository.java (line 35): @Transactional(readOnly = true) anti-pattern
+- ⚠ OwnerController.processUpdateOwnerForm (lines 164-165, 170-171): RedirectAttributes used incorrectly on validation failure
+
+**Architectural Notes:**
+- No service layer (acceptable for simple CRUD but not ideal for complex business logic)
+- No @ControllerAdvice for global exception handling (relies on Spring defaults)
+- Transaction boundaries at repository level (should be service layer)
+
+**Verdict:** Production-ready with minor architectural improvements recommended
 
 **VisitControllerTests.java:**
 - @WebMvcTest(VisitController.class) for web layer isolation

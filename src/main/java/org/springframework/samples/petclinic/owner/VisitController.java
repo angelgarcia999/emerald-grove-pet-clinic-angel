@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -48,14 +49,22 @@ class VisitController {
 
 	private final VisitRepository visits;
 
-	public VisitController(OwnerRepository owners, VisitRepository visits) {
+	private final VetRepository vets;
+
+	private final BusinessHoursValidator businessHoursValidator;
+
+	public VisitController(OwnerRepository owners, VisitRepository visits, VetRepository vets,
+			BusinessHoursValidator businessHoursValidator) {
 		this.owners = owners;
 		this.visits = visits;
+		this.vets = vets;
+		this.businessHoursValidator = businessHoursValidator;
 	}
 
-	@InitBinder
+	@InitBinder("visit")
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
+		dataBinder.addValidators(businessHoursValidator);
 	}
 
 	/**
@@ -84,6 +93,7 @@ class VisitController {
 		}
 		model.put("pet", pet);
 		model.put("owner", owner);
+		model.put("vets", this.vets.findAll());
 
 		Visit visit = new Visit();
 		pet.addVisit(visit);
@@ -101,8 +111,18 @@ class VisitController {
 	// called
 	@PostMapping("/owners/{ownerId}/pets/{petId}/visits/new")
 	public String processNewVisitForm(@ModelAttribute Owner owner, @PathVariable int petId, @Valid Visit visit,
-			BindingResult result, RedirectAttributes redirectAttributes) {
+			BindingResult result, RedirectAttributes redirectAttributes, Map<String, Object> model) {
+		// Custom validation for time and vet (required for new visits)
+		if (visit.getStartTime() == null) {
+			result.rejectValue("startTime", "visit.time.required", "Appointment time is required");
+		}
+		if (visit.getVet() == null) {
+			result.rejectValue("vet", "visit.vet.required", "Please select a veterinarian");
+		}
+
 		if (result.hasErrors()) {
+			// Re-add vets to model for form re-display
+			model.put("vets", this.vets.findAll());
 			return "pets/createOrUpdateVisitForm";
 		}
 

@@ -47,10 +47,11 @@ INSERT INTO pets (name, birth_date, type_id, owner_id) SELECT 'Freddy', '2000-03
 INSERT INTO pets (name, birth_date, type_id, owner_id) SELECT 'Lucky', '2000-06-24', 2, 10 WHERE NOT EXISTS (SELECT * FROM pets WHERE id=12);
 INSERT INTO pets (name, birth_date, type_id, owner_id) SELECT 'Sly', '2002-06-08', 1, 10 WHERE NOT EXISTS (SELECT * FROM pets WHERE id=13);
 
-INSERT INTO visits (pet_id, visit_date, description) SELECT 7, '2010-03-04', 'rabies shot' WHERE NOT EXISTS (SELECT * FROM visits WHERE id=1);
-INSERT INTO visits (pet_id, visit_date, description) SELECT 8, '2011-03-04', 'rabies shot' WHERE NOT EXISTS (SELECT * FROM visits WHERE id=2);
-INSERT INTO visits (pet_id, visit_date, description) SELECT 8, '2009-06-04', 'neutered' WHERE NOT EXISTS (SELECT * FROM visits WHERE id=3);
-INSERT INTO visits (pet_id, visit_date, description) SELECT 7, '2008-09-04', 'spayed' WHERE NOT EXISTS (SELECT * FROM visits WHERE id=4);
+-- Past visits with time and vet assignment
+INSERT INTO visits (pet_id, visit_date, description, start_time, duration_minutes, vet_id) SELECT 7, '2010-03-04', 'rabies shot', '09:30', 30, 1 WHERE NOT EXISTS (SELECT * FROM visits WHERE id=1);
+INSERT INTO visits (pet_id, visit_date, description, start_time, duration_minutes, vet_id) SELECT 8, '2011-03-04', 'rabies shot', '10:00', 30, 2 WHERE NOT EXISTS (SELECT * FROM visits WHERE id=2);
+INSERT INTO visits (pet_id, visit_date, description, start_time, duration_minutes, vet_id) SELECT 8, '2009-06-04', 'neutered', '14:30', 60, 3 WHERE NOT EXISTS (SELECT * FROM visits WHERE id=3);
+INSERT INTO visits (pet_id, visit_date, description, start_time, duration_minutes, vet_id) SELECT 7, '2008-09-04', 'spayed', '11:00', 45, 1 WHERE NOT EXISTS (SELECT * FROM visits WHERE id=4);
 
 SELECT setval(pg_get_serial_sequence('vets', 'id'), COALESCE((SELECT MAX(id) FROM vets), 0));
 SELECT setval(pg_get_serial_sequence('specialties', 'id'), COALESCE((SELECT MAX(id) FROM specialties), 0));

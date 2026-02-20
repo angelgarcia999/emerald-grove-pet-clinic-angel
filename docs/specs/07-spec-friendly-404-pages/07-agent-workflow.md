@@ -1,5 +1,12 @@
 # Agent Workflow Artifact - Issue #3: Friendly 404 Pages
 
+## Learning points:
+- Smaller tasks are better for AI agents to handle
+- always /clear before starting a new task
+- too much context can be like milk, its only good when its fresh
+- uses alot of tokens, so be mindful of that
+- parallel tasks can be run at the same time, this is neat
+
 ## Overview
 
 This document tracks all AI agents used throughout the development lifecycle of Issue #3: "Friendly 404s for missing owner/pet". It provides transparency into the agent team structure, responsibilities, and outcomes.

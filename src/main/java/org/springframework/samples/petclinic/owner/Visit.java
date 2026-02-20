@@ -16,12 +16,17 @@
 package org.springframework.samples.petclinic.owner;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.vet.Vet;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -46,11 +51,23 @@ public class Visit extends BaseEntity {
 	@NotBlank
 	private String description;
 
+	@Column(name = "start_time")
+	@DateTimeFormat(pattern = "HH:mm")
+	private LocalTime startTime;
+
+	@Column(name = "duration_minutes")
+	private Integer durationMinutes;
+
+	@ManyToOne(fetch = FetchType.EAGER, cascade = jakarta.persistence.CascadeType.MERGE)
+	@JoinColumn(name = "vet_id")
+	private Vet vet;
+
 	/**
-	 * Creates a new instance of Visit for the current date
+	 * Creates a new instance of Visit for the current date with default duration
 	 */
 	public Visit() {
 		this.date = LocalDate.now();
+		this.durationMinutes = 30;
 	}
 
 	public LocalDate getDate() {
@@ -67,6 +84,30 @@ public class Visit extends BaseEntity {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public LocalTime getStartTime() {
+		return this.startTime;
+	}
+
+	public void setStartTime(LocalTime startTime) {
+		this.startTime = startTime;
+	}
+
+	public Integer getDurationMinutes() {
+		return this.durationMinutes;
+	}
+
+	public void setDurationMinutes(Integer durationMinutes) {
+		this.durationMinutes = durationMinutes;
+	}
+
+	public Vet getVet() {
+		return this.vet;
+	}
+
+	public void setVet(Vet vet) {
+		this.vet = vet;
 	}
 
 }

@@ -34,10 +34,18 @@ test.describe('Visit Scheduling', () => {
     const description = `E2E visit ${Date.now()}`;
     await visitPage.fillVisitDate(visitDate);
     await visitPage.fillDescription(description);
+    await visitPage.selectTime('10:00');
+    await visitPage.selectVet('1');
+
+    // Wait a moment for form to be ready
+    await page.waitForTimeout(500);
 
     await page.screenshot({ path: testInfo.outputPath('visit-scheduling-form.png'), fullPage: true });
 
     await visitPage.submit();
+
+    // Wait for navigation after form submission
+    await page.waitForLoadState('networkidle');
 
     await expect(page.getByRole('heading', { name: /Pets and Visits/i })).toBeVisible();
 
@@ -115,8 +123,16 @@ test.describe('Visit Scheduling', () => {
     const description = `E2E visit today ${Date.now()}`;
     await visitPage.fillVisitDate(today);
     await visitPage.fillDescription(description);
+    await visitPage.selectTime('14:00');
+    await visitPage.selectVet('2');
+
+    // Wait a moment for form to be ready
+    await page.waitForTimeout(500);
 
     await visitPage.submit();
+
+    // Wait for navigation after form submission
+    await page.waitForLoadState('networkidle');
 
     // Verify successful redirect to owner details
     await expect(page.getByRole('heading', { name: /Pets and Visits/i })).toBeVisible();
@@ -160,8 +176,16 @@ test.describe('Visit Scheduling', () => {
 
     await visitPage.fillVisitDate(futureDateStr);
     await visitPage.fillDescription(description);
+    await visitPage.selectTime('09:30');
+    await visitPage.selectVet('3');
+
+    // Wait a moment for form to be ready
+    await page.waitForTimeout(500);
 
     await visitPage.submit();
+
+    // Wait for navigation after form submission
+    await page.waitForLoadState('networkidle');
 
     // Verify successful redirect to owner details
     await expect(page.getByRole('heading', { name: /Pets and Visits/i })).toBeVisible();

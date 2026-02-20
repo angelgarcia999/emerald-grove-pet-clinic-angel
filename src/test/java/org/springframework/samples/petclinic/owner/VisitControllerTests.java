@@ -29,11 +29,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledInNativeImage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.samples.petclinic.vet.Vet;
+import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -60,6 +65,12 @@ class VisitControllerTests {
 	@MockitoBean
 	private VisitRepository visits;
 
+	@MockitoBean
+	private VetRepository vets;
+
+	@MockitoBean
+	private BusinessHoursValidator businessHoursValidator;
+
 	@BeforeEach
 	void init() {
 		Owner owner = new Owner();
@@ -67,6 +78,7 @@ class VisitControllerTests {
 		owner.addPet(pet);
 		pet.setId(TEST_PET_ID);
 		given(this.owners.findById(TEST_OWNER_ID)).willReturn(Optional.of(owner));
+		given(this.businessHoursValidator.supports(any(Class.class))).willReturn(true);
 	}
 
 	@Test
@@ -81,7 +93,9 @@ class VisitControllerTests {
 		mockMvc
 			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
 				.param("name", "George")
-				.param("description", "Visit Description"))
+				.param("description", "Visit Description")
+				.param("startTime", "10:00")
+				.param("vet.id", "1"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
@@ -113,7 +127,9 @@ class VisitControllerTests {
 		mockMvc
 			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
 				.param("date", LocalDate.now().toString())
-				.param("description", "Today's visit"))
+				.param("description", "Today's visit")
+				.param("startTime", "14:00")
+				.param("vet.id", "1"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
@@ -123,7 +139,9 @@ class VisitControllerTests {
 		mockMvc
 			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
 				.param("date", LocalDate.now().plusDays(7).toString())
-				.param("description", "Future visit"))
+				.param("description", "Future visit")
+				.param("startTime", "09:30")
+				.param("vet.id", "1"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
@@ -149,6 +167,78 @@ class VisitControllerTests {
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("days", 14))
 			.andExpect(view().name("visits/upcomingVisits"));
+	}
+
+	/**
+	 * RED Phase: Test that GET request includes list of available vets in model
+	 */
+	@Test
+	void testInitNewVisitFormIncludesVets() throws Exception {
+		Vet vet1 = new Vet();
+		vet1.setId(1);
+		vet1.setFirstName("James");
+		vet1.setLastName("Carter");
+
+		Vet vet2 = new Vet();
+		vet2.setId(2);
+		vet2.setFirstName("Helen");
+		vet2.setLastName("Leary");
+
+		Collection<Vet> vetsList = Arrays.asList(vet1, vet2);
+		given(this.vets.findAll()).willReturn(vetsList);
+
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("vets"))
+			.andExpect(model().attribute("vets", vetsList))
+			.andExpect(view().name("pets/createOrUpdateVisitForm"));
+	}
+
+	/**
+	 * RED Phase: Test that POST request with time and vet saves Visit with both fields
+	 */
+	@Test
+	void testProcessNewVisitFormWithTimeAndVet() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
+				.param("date", LocalDate.now().plusDays(1).toString())
+				.param("description", "Checkup")
+				.param("startTime", "10:30")
+				.param("vet.id", "1"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"));
+	}
+
+	/**
+	 * RED Phase: Test that POST request missing time returns validation error
+	 */
+	@Test
+	void testProcessNewVisitFormMissingTime() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
+				.param("date", LocalDate.now().plusDays(1).toString())
+				.param("description", "Checkup")
+				.param("vet.id", "1"))
+			.andExpect(model().attributeHasErrors("visit"))
+			.andExpect(model().attributeHasFieldErrors("visit", "startTime"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdateVisitForm"));
+	}
+
+	/**
+	 * RED Phase: Test that POST request missing vet returns validation error
+	 */
+	@Test
+	void testProcessNewVisitFormMissingVet() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
+				.param("date", LocalDate.now().plusDays(1).toString())
+				.param("description", "Checkup")
+				.param("startTime", "10:30"))
+			.andExpect(model().attributeHasErrors("visit"))
+			.andExpect(model().attributeHasFieldErrors("visit", "vet"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdateVisitForm"));
 	}
 
 }

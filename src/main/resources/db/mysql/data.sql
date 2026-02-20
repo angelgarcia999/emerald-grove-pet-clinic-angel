@@ -47,12 +47,13 @@ INSERT IGNORE INTO pets VALUES (11, 'Freddy', '2000-03-09', 5, 9);
 INSERT IGNORE INTO pets VALUES (12, 'Lucky', '2000-06-24', 2, 10);
 INSERT IGNORE INTO pets VALUES (13, 'Sly', '2002-06-08', 1, 10);
 
-INSERT IGNORE INTO visits VALUES (1, 7, '2010-03-04', 'rabies shot');
-INSERT IGNORE INTO visits VALUES (2, 8, '2011-03-04', 'rabies shot');
-INSERT IGNORE INTO visits VALUES (3, 8, '2009-06-04', 'neutered');
-INSERT IGNORE INTO visits VALUES (4, 7, '2008-09-04', 'spayed');
+-- Past visits (id, pet_id, visit_date, description, start_time, duration_minutes, vet_id)
+INSERT IGNORE INTO visits VALUES (1, 7, '2010-03-04', 'rabies shot', '09:30', 30, 1);
+INSERT IGNORE INTO visits VALUES (2, 8, '2011-03-04', 'rabies shot', '10:00', 30, 2);
+INSERT IGNORE INTO visits VALUES (3, 8, '2009-06-04', 'neutered', '14:30', 60, 3);
+INSERT IGNORE INTO visits VALUES (4, 7, '2008-09-04', 'spayed', '11:00', 45, 1);
 
 -- Future-dated visits for testing upcoming visits feature
-INSERT INTO visits VALUES (default, 2, DATE_ADD(CURDATE(), INTERVAL 3 DAY), 'annual checkup');
-INSERT INTO visits VALUES (default, 3, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 'vaccination booster');
-INSERT INTO visits VALUES (default, 4, DATE_ADD(CURDATE(), INTERVAL 6 DAY), 'dental cleaning');
+INSERT INTO visits VALUES (default, 2, DATE_ADD(CURDATE(), INTERVAL 3 DAY), 'annual checkup', '09:00', 30, 1);
+INSERT INTO visits VALUES (default, 3, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 'vaccination booster', '10:30', 30, 2);
+INSERT INTO visits VALUES (default, 4, DATE_ADD(CURDATE(), INTERVAL 6 DAY), 'dental cleaning', '15:00', 45, 3);

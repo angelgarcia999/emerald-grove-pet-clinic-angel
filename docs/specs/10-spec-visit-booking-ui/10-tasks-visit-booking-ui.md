@@ -51,7 +51,7 @@
 - [x] 1.12 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify all tests fail with "element not found" or similar expected errors
 - [x] 1.13 Commit test file with message "test: add failing E2E tests for visit booking UI enhancement (RED phase)"
 
-### [ ] 2.0 GREEN Phase - Implement Two-Column Card Layout Structure
+### [~] 2.0 GREEN Phase - Implement Two-Column Card Layout Structure
 
 #### 2.0 Proof Artifact(s)
 
@@ -63,22 +63,22 @@
 
 #### 2.0 Tasks
 
-- [ ] 2.1 Verify `VisitController.java` passes `pet` object to template in `initNewVisitForm` method (should already exist from Issue 08-01)
-- [ ] 2.2 Verify `VisitController.java` passes `owner` object to template (may need to add: `model.addAttribute("owner", pet.getOwner())`)
-- [ ] 2.3 Verify `VisitController.java` passes `vets` collection to template (should already exist)
-- [ ] 2.4 Open `src/main/resources/templates/pets/createOrUpdateVisitForm.html` and replace page header with `<h2>New Visit</h2>` and `<h4>Schedule Appointment</h4>`
-- [ ] 2.5 Create two-column layout structure: `<div class="row">` with two `<div class="col-md-6 mb-4">` children (left and right columns)
-- [ ] 2.6 In left column, create Pet Summary Card: `<div class="card shadow-sm mb-4">` with `<div class="card-header"><h5>Pet Summary</h5></div>` and `<div class="card-body">`
-- [ ] 2.7 Inside Pet Summary Card body, add read-only fields: Pet name (`th:text="${pet.name}"`), Type (`th:text="${pet.type.name}"`), Birth Date (`th:text="${#temporals.format(pet.birthDate, 'yyyy-MM-dd')}"`), Owner (`th:text="${owner.firstName + ' ' + owner.lastName}"`)
-- [ ] 2.8 Below Pet Summary Card in left column, create Quick Info Card: `<div class="card shadow-sm mb-4">` with header "Quick Info" and card body
-- [ ] 2.9 Inside Quick Info Card body, add static text: "Clinic Hours: 9:00 AM – 5:00 PM", "Visit Duration: 30 minutes" (use `<p class="mb-2">` for each)
-- [ ] 2.10 Add i18n keys to `messages.properties`: `quickInfo.clinicHours=Clinic Hours`, `quickInfo.visitDuration=Visit Duration`, etc.
-- [ ] 2.11 Replace hardcoded text with i18n: `<span th:text="#{quickInfo.clinicHours}">Clinic Hours</span>: 9:00 AM – 5:00 PM`
-- [ ] 2.12 Run application locally: `./mvnw spring-boot:run`
-- [ ] 2.13 Navigate to http://localhost:8080/owners/1/pets/1/visits/new and verify two-column layout displays correctly
-- [ ] 2.14 Test responsive behavior: resize browser to < 768px width and verify columns stack vertically
-- [ ] 2.15 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify layout tests pass (tests 1.4, 1.5, 1.6, 1.11)
-- [ ] 2.16 Commit changes with message "feat: implement two-column card layout for visit booking (GREEN phase - Spec 10 Unit 1)"
+- [x] 2.1 Verify `VisitController.java` passes `pet` object to template in `initNewVisitForm` method (should already exist from Issue 08-01)
+- [x] 2.2 Verify `VisitController.java` passes `owner` object to template (may need to add: `model.addAttribute("owner", pet.getOwner())`)
+- [x] 2.3 Verify `VisitController.java` passes `vets` collection to template (should already exist)
+- [x] 2.4 Open `src/main/resources/templates/pets/createOrUpdateVisitForm.html` and replace page header with `<h2>New Visit</h2>` and `<h4>Schedule Appointment</h4>`
+- [x] 2.5 Create two-column layout structure: `<div class="row">` with two `<div class="col-md-6 mb-4">` children (left and right columns)
+- [x] 2.6 In left column, create Pet Summary Card: `<div class="card shadow-sm mb-4">` with `<div class="card-header"><h5>Pet Summary</h5></div>` and `<div class="card-body">`
+- [x] 2.7 Inside Pet Summary Card body, add read-only fields: Pet name (`th:text="${pet.name}"`), Type (`th:text="${pet.type.name}"`), Birth Date (`th:text="${#temporals.format(pet.birthDate, 'yyyy-MM-dd')}"`), Owner (`th:text="${owner.firstName + ' ' + owner.lastName}"`)
+- [x] 2.8 Below Pet Summary Card in left column, create Quick Info Card: `<div class="card shadow-sm mb-4">` with header "Quick Info" and card body
+- [x] 2.9 Inside Quick Info Card body, add static text: "Clinic Hours: 9:00 AM – 5:00 PM", "Visit Duration: 30 minutes" (use `<p class="mb-2">` for each)
+- [x] 2.10 Add i18n keys to `messages.properties`: `quickInfo.clinicHours=Clinic Hours`, `quickInfo.visitDuration=Visit Duration`, etc.
+- [x] 2.11 Replace hardcoded text with i18n: `<span th:text="#{quickInfo.clinicHours}">Clinic Hours</span>: 9:00 AM – 5:00 PM`
+- [x] 2.12 Run application locally: `./mvnw spring-boot:run`
+- [x] 2.13 Navigate to http://localhost:8080/owners/1/pets/1/visits/new and verify two-column layout displays correctly
+- [x] 2.14 Test responsive behavior: resize browser to < 768px width and verify columns stack vertically
+- [x] 2.15 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify layout tests pass (tests 1.4, 1.5, 1.6, 1.11)
+- [x] 2.16 Commit changes with message "feat: implement two-column card layout for visit booking (GREEN phase - Spec 10 Unit 1)"
 
 ### [ ] 3.0 GREEN Phase - Implement Enhanced Appointment Form with Validation
 

@@ -126,6 +126,11 @@ class VisitController {
 			return "pets/createOrUpdateVisitForm";
 		}
 
+		// Load the full Vet entity to avoid partial object update issues
+		if (visit.getVet() != null && visit.getVet().getId() != null) {
+			this.vets.findById(visit.getVet().getId()).ifPresent(visit::setVet);
+		}
+
 		owner.addVisit(petId, visit);
 		this.owners.save(owner);
 		redirectAttributes.addFlashAttribute("message", "Your visit has been booked");

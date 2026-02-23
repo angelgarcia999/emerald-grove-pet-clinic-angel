@@ -8,7 +8,7 @@ export class VisitPage extends BasePage {
   }
 
   heading(): Locator {
-    return this.page.getByRole('heading', { name: /Visit/i });
+    return this.page.getByRole('heading', { name: /New Visit/i });
   }
 
   async fillVisitDate(date: string): Promise<void> {

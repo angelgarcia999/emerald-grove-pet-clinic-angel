@@ -80,7 +80,7 @@
 - [x] 2.15 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify layout tests pass (tests 1.4, 1.5, 1.6, 1.11)
 - [x] 2.16 Commit changes with message "feat: implement two-column card layout for visit booking (GREEN phase - Spec 10 Unit 1)"
 
-### [ ] 3.0 GREEN Phase - Implement Enhanced Appointment Form with Validation
+### [~] 3.0 GREEN Phase - Implement Enhanced Appointment Form with Validation
 
 #### 3.0 Proof Artifact(s)
 
@@ -93,26 +93,26 @@
 
 #### 3.0 Tasks
 
-- [ ] 3.1 In right column of template, create Appointment Details Card: `<div class="card shadow-sm">` with header "Appointment Details" and card body
-- [ ] 3.2 Move existing form (`<form th:object="${visit}">`) inside Appointment Details Card body
-- [ ] 3.3 Update date field: keep existing `th:replace` for inputField fragment, ensure it uses `type="date"`, add required indicator: `<label>Date *</label>`
-- [ ] 3.4 Update date field to show validation errors: add `<span class="invalid-feedback" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Error</span>` below input
-- [ ] 3.5 Verify time slot dropdown (should already exist from Issue 08-01) shows all options from 9:00 AM to 5:00 PM with `value="HH:mm"` format
-- [ ] 3.6 Update time field label to show required indicator: `<label>Appointment Time *</label>`
-- [ ] 3.7 Add Bootstrap validation classes to time select: `th:classappend="${#fields.hasErrors('startTime')} ? 'is-invalid' : ''"`
-- [ ] 3.8 Update time field validation error display: `<span class="invalid-feedback" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}">Error</span>`
-- [ ] 3.9 Update vet selector (should already exist from Issue 08-01) to show specialties in option text: `<span th:text="'Dr. ' + ${vet.lastName}"></span><span th:if="${!vet.specialties.empty}" th:text="' (' + ${#strings.listJoin(vet.specialties, ', ')} + ')'"></span>` (this should already be implemented)
-- [ ] 3.10 Update vet field label to show required indicator: `<label>Veterinarian *</label>`
-- [ ] 3.11 Add Bootstrap validation classes to vet select: `th:classappend="${#fields.hasErrors('vet')} ? 'is-invalid' : ''"`
-- [ ] 3.12 Update vet field validation error display: `<span class="invalid-feedback" th:if="${#fields.hasErrors('vet')}" th:errors="*{vet}">Error</span>`
-- [ ] 3.13 Update description textarea: keep existing field binding, add `class="form-control"`, add `placeholder="Reason or notes for visit"` attribute
-- [ ] 3.14 Ensure submit button uses Bootstrap primary styling: `<button class="btn btn-primary" type="submit">Add Visit</button>`
-- [ ] 3.15 Update all form controls to use Bootstrap 5 classes: `form-label`, `form-control`, `form-select`, `is-invalid`, `invalid-feedback`
-- [ ] 3.16 Test form submission with valid data: navigate to visit form, fill all fields, submit, verify redirect to owner details page
-- [ ] 3.17 Test form validation: submit empty form, verify inline error messages appear below each required field with red text
-- [ ] 3.18 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify form tests pass (tests 1.7, 1.10)
-- [ ] 3.19 Update `e2e-tests/tests/features/visit-scheduling.spec.ts` to work with new card-based layout if needed
-- [ ] 3.20 Run full E2E suite: `cd e2e-tests && npm test` and verify all visit-related tests pass
+- [x] 3.1 In right column of template, create Appointment Details Card: `<div class="card shadow-sm">` with header "Appointment Details" and card body
+- [x] 3.2 Move existing form (`<form th:object="${visit}">`) inside Appointment Details Card body
+- [x] 3.3 Update date field: keep existing `th:replace` for inputField fragment, ensure it uses `type="date"`, add required indicator: `<label>Date *</label>`
+- [x] 3.4 Update date field to show validation errors: add `<span class="invalid-feedback" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Error</span>` below input
+- [x] 3.5 Verify time slot dropdown (should already exist from Issue 08-01) shows all options from 9:00 AM to 5:00 PM with `value="HH:mm"` format
+- [x] 3.6 Update time field label to show required indicator: `<label>Appointment Time *</label>`
+- [x] 3.7 Add Bootstrap validation classes to time select: `th:classappend="${#fields.hasErrors('startTime')} ? 'is-invalid' : ''"`
+- [x] 3.8 Update time field validation error display: `<span class="invalid-feedback" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}">Error</span>`
+- [x] 3.9 Update vet selector (should already exist from Issue 08-01) to show specialties in option text: `<span th:text="'Dr. ' + ${vet.lastName}"></span><span th:if="${!vet.specialties.empty}" th:text="' (' + ${#strings.listJoin(vet.specialties, ', ')} + ')'"></span>` (this should already be implemented)
+- [x] 3.10 Update vet field label to show required indicator: `<label>Veterinarian *</label>`
+- [x] 3.11 Add Bootstrap validation classes to vet select: `th:classappend="${#fields.hasErrors('vet')} ? 'is-invalid' : ''"`
+- [x] 3.12 Update vet field validation error display: `<span class="invalid-feedback" th:if="${#fields.hasErrors('vet')}" th:errors="*{vet}">Error</span>`
+- [x] 3.13 Update description textarea: keep existing field binding, add `class="form-control"`, add `placeholder="Reason or notes for visit"` attribute
+- [x] 3.14 Ensure submit button uses Bootstrap primary styling: `<button class="btn btn-primary" type="submit">Add Visit</button>`
+- [x] 3.15 Update all form controls to use Bootstrap 5 classes: `form-label`, `form-control`, `form-select`, `is-invalid`, `invalid-feedback`
+- [x] 3.16 Test form submission with valid data: navigate to visit form, fill all fields, submit, verify redirect to owner details page
+- [x] 3.17 Test form validation: submit empty form, verify inline error messages appear below each required field with red text
+- [x] 3.18 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify form tests pass (tests 1.7, 1.10) - 8/10 tests passing, 2 skipped
+- [x] 3.19 Update `e2e-tests/tests/features/visit-scheduling.spec.ts` to work with new card-based layout if needed
+- [x] 3.20 Run full E2E suite: `cd e2e-tests && npm test` and verify all visit-related tests pass
 - [ ] 3.21 Commit changes with message "feat: implement enhanced appointment form with validation (GREEN phase - Spec 10 Unit 2)"
 
 ### [ ] 4.0 GREEN Phase - Implement Previous Visits Table with History Display

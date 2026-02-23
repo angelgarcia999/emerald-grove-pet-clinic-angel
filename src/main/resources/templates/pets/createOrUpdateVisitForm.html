@@ -115,9 +115,11 @@
 
             <!-- Description Field -->
             <div class="mb-3">
-              <label for="description" class="form-label">Description</label>
+              <label for="description" class="form-label">Description *</label>
               <input type="text" class="form-control" id="description" th:field="*{description}"
+                     th:classappend="${#fields.hasErrors('description')} ? 'is-invalid' : ''"
                      placeholder="Reason or notes for visit" />
+              <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Description error</div>
             </div>
 
             <!-- Submit Button -->

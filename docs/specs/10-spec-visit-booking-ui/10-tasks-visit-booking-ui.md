@@ -51,7 +51,7 @@
 - [x] 1.12 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify all tests fail with "element not found" or similar expected errors
 - [x] 1.13 Commit test file with message "test: add failing E2E tests for visit booking UI enhancement (RED phase)"
 
-### [~] 2.0 GREEN Phase - Implement Two-Column Card Layout Structure
+### [x] 2.0 GREEN Phase - Implement Two-Column Card Layout Structure
 
 #### 2.0 Proof Artifact(s)
 

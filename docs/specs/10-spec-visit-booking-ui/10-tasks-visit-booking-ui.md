@@ -27,7 +27,7 @@
 
 ## Tasks
 
-### [~] 1.0 RED Phase - Write Failing E2E Tests for New UI
+### [x] 1.0 RED Phase - Write Failing E2E Tests for New UI
 
 #### 1.0 Proof Artifact(s)
 

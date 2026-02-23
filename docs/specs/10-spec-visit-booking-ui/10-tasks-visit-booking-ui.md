@@ -27,7 +27,7 @@
 
 ## Tasks
 
-### [ ] 1.0 RED Phase - Write Failing E2E Tests for New UI
+### [~] 1.0 RED Phase - Write Failing E2E Tests for New UI
 
 #### 1.0 Proof Artifact(s)
 
@@ -37,19 +37,19 @@
 
 #### 1.0 Tasks
 
-- [ ] 1.1 Create new E2E test file `e2e-tests/tests/features/visit-booking-ui.spec.ts` with test suite structure
-- [ ] 1.2 Update `e2e-tests/tests/pages/visit-page.ts` with selectors for Pet Summary Card (`.card` with pet name, type, birth date, owner)
-- [ ] 1.3 Update `visit-page.ts` with selectors for Quick Info Card (clinic hours, visit duration text)
-- [ ] 1.4 Write test case "should display two-column layout on desktop" checking for `col-md-6` columns
-- [ ] 1.5 Write test case "should display Pet Summary Card with all pet details" verifying pet name, type, birth date, owner name visible
-- [ ] 1.6 Write test case "should display Quick Info Card with scheduling rules" verifying "9:00 AM – 5:00 PM" and "30 minutes" text
-- [ ] 1.7 Write test case "should show enhanced vet selector with specialties" checking for vet options containing specialty text in parentheses
-- [ ] 1.8 Write test case "should display previous visits table with headers" checking for Date, Time, Veterinarian, Description columns
-- [ ] 1.9 Write test case "should show empty state when no previous visits exist" verifying empty state message text
-- [ ] 1.10 Write test case "should display inline validation errors for required fields" submitting empty form and checking for error text below fields
-- [ ] 1.11 Write test case "should stack columns vertically on mobile viewport" setting viewport to 375px width and checking layout
-- [ ] 1.12 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify all tests fail with "element not found" or similar expected errors
-- [ ] 1.13 Commit test file with message "test: add failing E2E tests for visit booking UI enhancement (RED phase)"
+- [x] 1.1 Create new E2E test file `e2e-tests/tests/features/visit-booking-ui.spec.ts` with test suite structure
+- [x] 1.2 Update `e2e-tests/tests/pages/visit-page.ts` with selectors for Pet Summary Card (`.card` with pet name, type, birth date, owner)
+- [x] 1.3 Update `visit-page.ts` with selectors for Quick Info Card (clinic hours, visit duration text)
+- [x] 1.4 Write test case "should display two-column layout on desktop" checking for `col-md-6` columns
+- [x] 1.5 Write test case "should display Pet Summary Card with all pet details" verifying pet name, type, birth date, owner name visible
+- [x] 1.6 Write test case "should display Quick Info Card with scheduling rules" verifying "9:00 AM – 5:00 PM" and "30 minutes" text
+- [x] 1.7 Write test case "should show enhanced vet selector with specialties" checking for vet options containing specialty text in parentheses
+- [x] 1.8 Write test case "should display previous visits table with headers" checking for Date, Time, Veterinarian, Description columns
+- [x] 1.9 Write test case "should show empty state when no previous visits exist" verifying empty state message text
+- [x] 1.10 Write test case "should display inline validation errors for required fields" submitting empty form and checking for error text below fields
+- [x] 1.11 Write test case "should stack columns vertically on mobile viewport" setting viewport to 375px width and checking layout
+- [x] 1.12 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify all tests fail with "element not found" or similar expected errors
+- [x] 1.13 Commit test file with message "test: add failing E2E tests for visit booking UI enhancement (RED phase)"
 
 ### [ ] 2.0 GREEN Phase - Implement Two-Column Card Layout Structure
 

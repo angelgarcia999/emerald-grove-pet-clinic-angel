@@ -115,7 +115,7 @@
 - [x] 3.20 Run full E2E suite: `cd e2e-tests && npm test` and verify all visit-related tests pass
 - [x] 3.21 Commit changes with message "feat: implement enhanced appointment form with validation (GREEN phase - Spec 10 Unit 2)"
 
-### [~] 4.0 GREEN Phase - Implement Previous Visits Table with History Display
+### [x] 4.0 GREEN Phase - Implement Previous Visits Table with History Display
 
 #### 4.0 Proof Artifact(s)
 
@@ -144,7 +144,7 @@
 - [x] 4.15 Create a new visit, verify redirect to owner details, then navigate back to visits page and verify new visit appears in table
 - [x] 4.16 Test responsive table: resize browser to mobile width and verify table remains readable (horizontal scroll if needed)
 - [x] 4.17 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify previous visits tests pass (tests 1.8, 1.9) - Test 1.8 passed, 1.9 skipped
-- [ ] 4.18 Commit changes with message "feat: implement previous visits table with empty state (GREEN phase - Spec 10 Unit 3)"
+- [x] 4.18 Commit changes with message "feat: implement previous visits table with empty state (GREEN phase - Spec 10 Unit 3)"
 
 ### [ ] 5.0 REFACTOR & Validation Phase - Quality Assurance and Proof Artifacts
 

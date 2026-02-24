@@ -53,18 +53,25 @@ class VisitController {
 
 	private final BusinessHoursValidator businessHoursValidator;
 
+	private final ConflictValidator conflictValidator;
+
+	private final ConflictDetectionService conflictDetectionService;
+
 	public VisitController(OwnerRepository owners, VisitRepository visits, VetRepository vets,
-			BusinessHoursValidator businessHoursValidator) {
+			BusinessHoursValidator businessHoursValidator, ConflictValidator conflictValidator,
+			ConflictDetectionService conflictDetectionService) {
 		this.owners = owners;
 		this.visits = visits;
 		this.vets = vets;
 		this.businessHoursValidator = businessHoursValidator;
+		this.conflictValidator = conflictValidator;
+		this.conflictDetectionService = conflictDetectionService;
 	}
 
 	@InitBinder("visit")
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
-		dataBinder.addValidators(businessHoursValidator);
+		dataBinder.addValidators(businessHoursValidator, conflictValidator);
 	}
 
 	/**
@@ -118,6 +125,12 @@ class VisitController {
 		}
 		if (visit.getVet() == null) {
 			result.rejectValue("vet", "visit.vet.required", "Please select a veterinarian");
+		}
+
+		// Check for pet conflict (must be done here since we have access to petId)
+		if (visit.getDate() != null && visit.getStartTime() != null
+				&& conflictDetectionService.hasPetConflict(visit, petId)) {
+			result.rejectValue("startTime", "visit.conflict.pet", "Pet is already scheduled at this time");
 		}
 
 		if (result.hasErrors()) {

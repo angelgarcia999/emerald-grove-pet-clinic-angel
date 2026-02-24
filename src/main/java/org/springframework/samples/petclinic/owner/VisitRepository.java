@@ -43,4 +43,34 @@ public interface VisitRepository extends Repository<Visit, Integer> {
 	@Query("SELECT v FROM Pet p JOIN p.visits v WHERE v.date BETWEEN :start AND :end ORDER BY v.date ASC")
 	List<Visit> findUpcomingVisits(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
+	/**
+	 * Find all visits for a specific vet on a given date. Used for conflict detection.
+	 * @param vet the veterinarian
+	 * @param date the date to check
+	 * @return list of visits for the specified vet on the given date
+	 */
+	@Transactional(readOnly = true)
+	@Query("SELECT v FROM Pet p JOIN p.visits v WHERE v.vet = :vet AND v.date = :date")
+	List<Visit> findByVetAndDate(@Param("vet") org.springframework.samples.petclinic.vet.Vet vet,
+			@Param("date") LocalDate date);
+
+	/**
+	 * Find all visits for a specific pet on a given date. Used for conflict detection.
+	 * @param petId the pet ID
+	 * @param date the date to check
+	 * @return list of visits for the specified pet on the given date
+	 */
+	@Transactional(readOnly = true)
+	@Query("SELECT v FROM Pet p JOIN p.visits v WHERE p.id = :petId AND v.date = :date")
+	List<Visit> findByPetIdAndDate(@Param("petId") Integer petId, @Param("date") LocalDate date);
+
+	/**
+	 * Find all visits on a specific date. Used for clinic capacity checking.
+	 * @param date the date to check
+	 * @return list of all visits on the given date
+	 */
+	@Transactional(readOnly = true)
+	@Query("SELECT v FROM Pet p JOIN p.visits v WHERE v.date = :date")
+	List<Visit> findByDate(@Param("date") LocalDate date);
+
 }

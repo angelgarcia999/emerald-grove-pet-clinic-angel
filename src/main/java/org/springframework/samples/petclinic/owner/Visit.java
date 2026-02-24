@@ -58,7 +58,7 @@ public class Visit extends BaseEntity {
 	@Column(name = "duration_minutes")
 	private Integer durationMinutes;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = jakarta.persistence.CascadeType.MERGE)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "vet_id")
 	private Vet vet;
 

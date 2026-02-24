@@ -1,6 +1,7 @@
 import { test, expect } from '@fixtures/base-test';
 
 import { VisitPage } from '@pages/visit-page';
+import { getFutureDate, getPastDate, getTodayDate, getUniqueDescription } from '@utils/date-helpers';
 
 test.describe('Visit Scheduling', () => {
   test('can schedule a visit for an existing pet', async ({ page }, testInfo) => {
@@ -28,10 +29,8 @@ test.describe('Visit Scheduling', () => {
     await expect(visitPage.heading()).toBeVisible();
 
     // Use future date to pass validation
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 7);
-    const visitDate = futureDate.toISOString().split('T')[0];
-    const description = `E2E visit ${Date.now()}`;
+    const visitDate = getFutureDate(7);
+    const description = getUniqueDescription('E2E visit');
     await visitPage.fillVisitDate(visitDate);
     await visitPage.fillDescription(description);
     await visitPage.selectTime('10:00');
@@ -65,7 +64,9 @@ test.describe('Visit Scheduling', () => {
 
     await page.getByRole('link', { name: /Add Visit/i }).first().click();
 
-    await visitPage.fillVisitDate('2024-03-03');
+    // Use future date to avoid validation error on date field
+    const futureDate = getFutureDate(3);
+    await visitPage.fillVisitDate(futureDate);
     await visitPage.submit();
 
     await expect(page.getByText(/must not be blank/i)).toBeVisible();
@@ -78,8 +79,9 @@ test.describe('Visit Scheduling', () => {
 
     await page.getByRole('link', { name: /Add Visit/i }).first().click();
 
-    // Fill form with past date
-    await visitPage.fillVisitDate('2020-01-01');
+    // Use dynamic past date (30 days ago) to test validation
+    const pastDate = getPastDate(30);
+    await visitPage.fillVisitDate(pastDate);
     await visitPage.fillDescription('Past visit attempt');
 
     // Capture screenshot before submission
@@ -119,8 +121,8 @@ test.describe('Visit Scheduling', () => {
     await expect(visitPage.heading()).toBeVisible();
 
     // Use today's date
-    const today = new Date().toISOString().split('T')[0];
-    const description = `E2E visit today ${Date.now()}`;
+    const today = getTodayDate();
+    const description = getUniqueDescription('E2E visit today');
     await visitPage.fillVisitDate(today);
     await visitPage.fillDescription(description);
     await visitPage.selectTime('14:00');
@@ -169,10 +171,8 @@ test.describe('Visit Scheduling', () => {
     await expect(visitPage.heading()).toBeVisible();
 
     // Use future date (7 days from now)
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 7);
-    const futureDateStr = futureDate.toISOString().split('T')[0];
-    const description = `E2E visit future ${Date.now()}`;
+    const futureDateStr = getFutureDate(7);
+    const description = getUniqueDescription('E2E visit future');
 
     await visitPage.fillVisitDate(futureDateStr);
     await visitPage.fillDescription(description);

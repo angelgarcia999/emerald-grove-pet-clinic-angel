@@ -2,6 +2,7 @@ import { test, expect } from '@fixtures/base-test';
 
 import { OwnerPage } from '@pages/owner-page';
 import { createPet } from '@utils/pet-factory';
+import { getFutureDate } from '@utils/date-helpers';
 
 test.describe('Pet Management', () => {
   test('can add a pet to an existing owner and see it on owner details', async ({ page }, testInfo) => {
@@ -35,9 +36,7 @@ test.describe('Pet Management', () => {
     await petRow.getByRole('link', { name: /Add Visit/i }).first().click();
 
     // Use future date to pass validation
-    const visitDate = new Date();
-    visitDate.setDate(visitDate.getDate() + 7);
-    const visitDateStr = visitDate.toISOString().split('T')[0];
+    const visitDateStr = getFutureDate(7);
 
     await page.locator('input#date').fill(visitDateStr);
     await page.locator('input#description').fill('Annual checkup');

@@ -161,17 +161,17 @@
 
 #### 5.0 Tasks
 
-- [ ] 5.1 Run test-temporal-coupling-detector agent to check for hardcoded dates in E2E tests: verify `visit-booking-ui.spec.ts` and updated tests use dynamic date generation
-- [ ] 5.2 Fix any temporal coupling issues found (e.g., replace hardcoded dates with `new Date()` or date utilities)
-- [ ] 5.3 Run i18n-sync-validator agent to ensure all new message keys exist in all language files (`messages_de.properties`, `messages_es.properties`, etc.)
-- [ ] 5.4 Add missing translation keys to all `messages_*.properties` files (use placeholder translations for non-English if needed)
-- [ ] 5.5 Run spring-boot-validator agent to check Spring Boot best practices (proper annotations, transaction handling, etc.)
-- [ ] 5.6 Fix any Spring Boot violations found (e.g., missing @Transactional, improper repository usage)
-- [ ] 5.7 Run architecture-compliance-checker agent to verify layered architecture is maintained (controller → service → repository)
-- [ ] 5.8 Fix any architectural violations (e.g., controller directly accessing repositories should use service layer)
-- [ ] 5.9 Run full test suite: `./mvnw test` and verify all unit and integration tests pass
-- [ ] 5.10 Generate code coverage report: check that coverage is >90% for modified files
-- [ ] 5.11 Run full E2E test suite: `cd e2e-tests && npm test` and verify 100% pass rate
+- [x] 5.1 Run test-temporal-coupling-detector agent to check for hardcoded dates in E2E tests: verify `visit-booking-ui.spec.ts` and updated tests use dynamic date generation
+- [x] 5.2 Fix any temporal coupling issues found (e.g., replace hardcoded dates with `new Date()` or date utilities)
+- [x] 5.3 Run i18n-sync-validator agent to ensure all new message keys exist in all language files (`messages_de.properties`, `messages_es.properties`, etc.)
+- [x] 5.4 Add missing translation keys to all `messages_*.properties` files (use placeholder translations for non-English if needed)
+- [x] 5.5 Run spring-boot-validator agent to check Spring Boot best practices (proper annotations, transaction handling, etc.)
+- [x] 5.6 Fix any Spring Boot violations found (e.g., missing @Transactional, improper repository usage)
+- [x] 5.7 Run architecture-compliance-checker agent to verify layered architecture is maintained (controller → service → repository)
+- [x] 5.8 Fix any architectural violations (e.g., controller directly accessing repositories should use service layer)
+- [x] 5.9 Run full test suite: `./mvnw test` and verify all unit and integration tests pass
+- [x] 5.10 Generate code coverage report: check that coverage is >90% for modified files
+- [x] 5.11 Run full E2E test suite: `cd e2e-tests && npm test` and verify 100% pass rate
 - [ ] 5.12 Review code for refactoring opportunities: extract repeated Thymeleaf fragments, eliminate duplication, improve readability
 - [ ] 5.13 Perform manual testing: navigate complete user flow from owner details → pet details → add visit → fill form → submit → verify redirect and visit appears
 - [ ] 5.14 Generate proof artifact screenshots (use browser tools or `agent-browser`):

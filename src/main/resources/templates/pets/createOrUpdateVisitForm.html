@@ -5,8 +5,8 @@
 <body>
 
   <!-- Page Header -->
-  <h2>New Visit</h2>
-  <h4 class="text-muted">Schedule Appointment</h4>
+  <h2 th:text="#{visit.newVisit}">New Visit</h2>
+  <h4 class="text-muted" th:text="#{visit.scheduleAppointment}">Schedule Appointment</h4>
 
   <!-- Two-Column Layout -->
   <div class="row mt-4">
@@ -15,23 +15,23 @@
       <!-- Pet Summary Card -->
       <div class="card shadow-sm mb-4">
         <div class="card-header">
-          <h5 class="mb-0">Pet Summary</h5>
+          <h5 class="mb-0" th:text="#{visit.petSummary}">Pet Summary</h5>
         </div>
         <div class="card-body">
           <div class="row mb-2">
-            <div class="col-4"><strong>Name:</strong></div>
+            <div class="col-4"><strong><span th:text="#{pet.name}">Name</span>:</strong></div>
             <div class="col-8 pet-name" data-test="pet-name" th:text="${pet.name}">Leo</div>
           </div>
           <div class="row mb-2">
-            <div class="col-4"><strong>Type:</strong></div>
+            <div class="col-4"><strong><span th:text="#{pet.type}">Type</span>:</strong></div>
             <div class="col-8 pet-type" data-test="pet-type" th:text="${pet.type.name}">Cat</div>
           </div>
           <div class="row mb-2">
-            <div class="col-4"><strong>Birth Date:</strong></div>
+            <div class="col-4"><strong><span th:text="#{pet.birthDate}">Birth Date</span>:</strong></div>
             <div class="col-8 pet-birth-date" data-test="pet-birth-date" th:text="${#temporals.format(pet.birthDate, 'yyyy-MM-dd')}">2010-09-07</div>
           </div>
           <div class="row mb-0">
-            <div class="col-4"><strong>Owner:</strong></div>
+            <div class="col-4"><strong><span th:text="#{pet.owner}">Owner</span>:</strong></div>
             <div class="col-8 pet-owner" data-test="pet-owner" th:text="${owner.firstName + ' ' + owner.lastName}">George Franklin</div>
           </div>
         </div>
@@ -40,16 +40,16 @@
       <!-- Quick Info Card -->
       <div class="card shadow-sm mb-4">
         <div class="card-header">
-          <h5 class="mb-0">Quick Info</h5>
+          <h5 class="mb-0" th:text="#{quickInfo}">Quick Info</h5>
         </div>
         <div class="card-body">
           <p class="mb-2">
             <strong><span th:text="#{quickInfo.clinicHours}">Clinic Hours</span>:</strong>
-            <span>9:00 AM – 5:00 PM</span>
+            <span th:text="#{quickInfo.clinicHoursValue}">9:00 AM – 5:00 PM</span>
           </p>
           <p class="mb-0">
             <strong><span th:text="#{quickInfo.visitDuration}">Visit Duration</span>:</strong>
-            <span>30 minutes</span>
+            <span th:text="#{quickInfo.visitDurationValue}">30 minutes</span>
           </p>
         </div>
       </div>
@@ -60,66 +60,66 @@
       <!-- Appointment Details Card -->
       <div class="card shadow-sm">
         <div class="card-header">
-          <h5 class="mb-0">Appointment Details</h5>
+          <h5 class="mb-0" th:text="#{visit.appointmentDetails}">Appointment Details</h5>
         </div>
         <div class="card-body">
           <form th:object="${visit}" method="post">
             <!-- Date Field -->
             <div class="mb-3">
-              <label for="date" class="form-label">Date *</label>
+              <label for="date" class="form-label"><span th:text="#{visit.date.label}">Date</span> *</label>
               <input type="date" class="form-control" id="date" th:field="*{date}"
                      th:classappend="${#fields.hasErrors('date')} ? 'is-invalid' : ''" />
-              <div class="invalid-feedback" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Date error</div>
+              <div class="invalid-feedback" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
             </div>
 
             <!-- Time Field -->
             <div class="mb-3">
-              <label for="startTime" class="form-label">Appointment Time *</label>
+              <label for="startTime" class="form-label"><span th:text="#{visit.time.label}">Appointment Time</span> *</label>
               <select class="form-select" id="startTime" th:field="*{startTime}"
                       th:classappend="${#fields.hasErrors('startTime')} ? 'is-invalid' : ''">
-                <option value="">Select a time</option>
-                <option value="09:00">9:00 AM</option>
-                <option value="09:30">9:30 AM</option>
-                <option value="10:00">10:00 AM</option>
-                <option value="10:30">10:30 AM</option>
-                <option value="11:00">11:00 AM</option>
-                <option value="11:30">11:30 AM</option>
-                <option value="12:00">12:00 PM</option>
-                <option value="12:30">12:30 PM</option>
-                <option value="13:00">1:00 PM</option>
-                <option value="13:30">1:30 PM</option>
-                <option value="14:00">2:00 PM</option>
-                <option value="14:30">2:30 PM</option>
-                <option value="15:00">3:00 PM</option>
-                <option value="15:30">3:30 PM</option>
-                <option value="16:00">4:00 PM</option>
-                <option value="16:30">4:30 PM</option>
-                <option value="17:00">5:00 PM</option>
+                <option value="" th:text="#{visit.selectTime}">Select a time</option>
+                <option value="09:00" th:text="#{visit.time.09_00}">9:00 AM</option>
+                <option value="09:30" th:text="#{visit.time.09_30}">9:30 AM</option>
+                <option value="10:00" th:text="#{visit.time.10_00}">10:00 AM</option>
+                <option value="10:30" th:text="#{visit.time.10_30}">10:30 AM</option>
+                <option value="11:00" th:text="#{visit.time.11_00}">11:00 AM</option>
+                <option value="11:30" th:text="#{visit.time.11_30}">11:30 AM</option>
+                <option value="12:00" th:text="#{visit.time.12_00}">12:00 PM</option>
+                <option value="12:30" th:text="#{visit.time.12_30}">12:30 PM</option>
+                <option value="13:00" th:text="#{visit.time.13_00}">1:00 PM</option>
+                <option value="13:30" th:text="#{visit.time.13_30}">1:30 PM</option>
+                <option value="14:00" th:text="#{visit.time.14_00}">2:00 PM</option>
+                <option value="14:30" th:text="#{visit.time.14_30}">2:30 PM</option>
+                <option value="15:00" th:text="#{visit.time.15_00}">3:00 PM</option>
+                <option value="15:30" th:text="#{visit.time.15_30}">3:30 PM</option>
+                <option value="16:00" th:text="#{visit.time.16_00}">4:00 PM</option>
+                <option value="16:30" th:text="#{visit.time.16_30}">4:30 PM</option>
+                <option value="17:00" th:text="#{visit.time.17_00}">5:00 PM</option>
               </select>
-              <div class="invalid-feedback" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}">Time error</div>
+              <div class="invalid-feedback" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}"></div>
             </div>
 
             <!-- Veterinarian Field -->
             <div class="mb-3">
-              <label for="vet.id" class="form-label">Veterinarian *</label>
+              <label for="vet.id" class="form-label"><span th:text="#{visit.vet.label}">Veterinarian</span> *</label>
               <select class="form-select" id="vet.id" th:field="*{vet.id}"
                       th:classappend="${#fields.hasErrors('vet')} ? 'is-invalid' : ''">
-                <option value="">Select a veterinarian</option>
+                <option value="" th:text="#{visit.selectVet}">Select a veterinarian</option>
                 <option th:each="vet : ${vets}" th:value="${vet.id}">
                   <span th:text="'Dr. ' + ${vet.lastName}">Dr. Smith</span>
                   <span th:if="${!vet.specialties.empty}" th:text="' (' + ${#strings.listJoin(vet.specialties, ', ')} + ')'">(Specialties)</span>
                 </option>
               </select>
-              <div class="invalid-feedback" th:if="${#fields.hasErrors('vet')}" th:errors="*{vet}">Vet error</div>
+              <div class="invalid-feedback" th:if="${#fields.hasErrors('vet')}" th:errors="*{vet}"></div>
             </div>
 
             <!-- Description Field -->
             <div class="mb-3">
-              <label for="description" class="form-label">Description *</label>
+              <label for="description" class="form-label"><span th:text="#{visit.description.label}">Description</span> *</label>
               <input type="text" class="form-control" id="description" th:field="*{description}"
                      th:classappend="${#fields.hasErrors('description')} ? 'is-invalid' : ''"
                      placeholder="Reason or notes for visit" />
-              <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Description error</div>
+              <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
             </div>
 
             <!-- Submit Button -->
@@ -147,8 +147,8 @@
           <thead>
             <tr>
               <th th:text="#{date}">Date</th>
-              <th>Time</th>
-              <th>Veterinarian</th>
+              <th th:text="#{visit.table.time}">Time</th>
+              <th th:text="#{visit.table.vet}">Veterinarian</th>
               <th th:text="#{description}">Description</th>
             </tr>
           </thead>

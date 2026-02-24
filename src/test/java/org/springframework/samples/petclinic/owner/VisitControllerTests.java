@@ -74,9 +74,24 @@ class VisitControllerTests {
 	@BeforeEach
 	void init() {
 		Owner owner = new Owner();
+		owner.setId(TEST_OWNER_ID);
+		owner.setFirstName("George");
+		owner.setLastName("Franklin");
+
+		PetType petType = new PetType();
+		petType.setId(1);
+		petType.setName("cat");
+
 		Pet pet = new Pet();
+		pet.setName("Leo");
+		pet.setType(petType);
+		pet.setBirthDate(LocalDate.of(2015, 9, 7));
+
+		// Add pet to owner BEFORE setting ID (addPet only works if pet.isNew() == true)
 		owner.addPet(pet);
+		// Now set the pet ID after it's been added to the owner
 		pet.setId(TEST_PET_ID);
+
 		given(this.owners.findById(TEST_OWNER_ID)).willReturn(Optional.of(owner));
 		given(this.businessHoursValidator.supports(any(Class.class))).willReturn(true);
 	}

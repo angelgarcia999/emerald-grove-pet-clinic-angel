@@ -71,6 +71,12 @@ class VisitControllerTests {
 	@MockitoBean
 	private BusinessHoursValidator businessHoursValidator;
 
+	@MockitoBean
+	private ConflictValidator conflictValidator;
+
+	@MockitoBean
+	private ConflictDetectionService conflictDetectionService;
+
 	@BeforeEach
 	void init() {
 		Owner owner = new Owner();
@@ -94,6 +100,8 @@ class VisitControllerTests {
 
 		given(this.owners.findById(TEST_OWNER_ID)).willReturn(Optional.of(owner));
 		given(this.businessHoursValidator.supports(any(Class.class))).willReturn(true);
+		given(this.conflictValidator.supports(any(Class.class))).willReturn(true);
+		given(this.conflictDetectionService.hasPetConflict(any(Visit.class), any(Integer.class))).willReturn(false);
 	}
 
 	@Test

@@ -172,25 +172,25 @@
 - [x] 5.9 Run full test suite: `./mvnw test` and verify all unit and integration tests pass
 - [x] 5.10 Generate code coverage report: check that coverage is >90% for modified files
 - [x] 5.11 Run full E2E test suite: `cd e2e-tests && npm test` and verify 100% pass rate
-- [ ] 5.12 Review code for refactoring opportunities: extract repeated Thymeleaf fragments, eliminate duplication, improve readability
-- [ ] 5.13 Perform manual testing: navigate complete user flow from owner details → pet details → add visit → fill form → submit → verify redirect and visit appears
-- [ ] 5.14 Generate proof artifact screenshots (use browser tools or `agent-browser`):
-  - [ ] 5.14.1 Desktop view showing complete two-column layout
-  - [ ] 5.14.2 Mobile view (< 768px) showing stacked columns
-  - [ ] 5.14.3 Pet Summary Card closeup
-  - [ ] 5.14.4 Quick Info Card closeup
-  - [ ] 5.14.5 Appointment form with all fields filled
-  - [ ] 5.14.6 Time slot dropdown expanded
-  - [ ] 5.14.7 Vet selector expanded showing specialties
-  - [ ] 5.14.8 Form with validation errors displayed
-  - [ ] 5.14.9 Previous visits table with data
-  - [ ] 5.14.10 Empty state for previous visits
-  - [ ] 5.14.11 Successful form submission and redirect
-- [ ] 5.15 Test in different browsers: verify Chrome, Firefox, Safari compatibility (focus on HTML5 date input fallback)
-- [ ] 5.16 Open browser developer tools (F12), check Console tab for JavaScript errors (should be none)
-- [ ] 5.17 Check Network tab for failed requests or slow loading (all resources should load successfully)
-- [ ] 5.18 Save all proof artifact screenshots to `docs/specs/10-spec-visit-booking-ui/proof-artifacts/` directory
-- [ ] 5.19 Create summary document `docs/specs/10-spec-visit-booking-ui/proof-artifacts/VALIDATION_SUMMARY.md` listing all proof artifacts with descriptions
-- [ ] 5.20 Review against spec: verify all functional requirements from Units 1-4 are implemented and demonstrable
-- [ ] 5.21 Commit proof artifacts: "docs: add proof artifacts for visit booking UI enhancement (Spec 10 validation)"
-- [ ] 5.22 Final commit for any remaining refactoring: "refactor: improve code quality for visit booking UI (REFACTOR phase - Spec 10)"
+- [x] 5.12 Review code for refactoring opportunities: extract repeated Thymeleaf fragments, eliminate duplication, improve readability
+- [x] 5.13 Perform manual testing: navigate complete user flow from owner details → pet details → add visit → fill form → submit → verify redirect and visit appears
+- [x] 5.14 Generate proof artifact screenshots (use browser tools or `agent-browser`):
+  - [x] 5.14.1 Desktop view showing complete two-column layout
+  - [x] 5.14.2 Mobile view (< 768px) showing stacked columns
+  - [x] 5.14.3 Pet Summary Card closeup
+  - [x] 5.14.4 Quick Info Card closeup
+  - [x] 5.14.5 Appointment form with all fields filled
+  - [x] 5.14.6 Time slot dropdown expanded
+  - [x] 5.14.7 Vet selector expanded showing specialties
+  - [x] 5.14.8 Form with validation errors displayed
+  - [x] 5.14.9 Previous visits table with data
+  - [x] 5.14.10 Empty state for previous visits
+  - [x] 5.14.11 Successful form submission and redirect
+- [x] 5.15 Test in different browsers: verify Chrome, Firefox, Safari compatibility (focus on HTML5 date input fallback)
+- [x] 5.16 Open browser developer tools (F12), check Console tab for JavaScript errors (should be none)
+- [x] 5.17 Check Network tab for failed requests or slow loading (all resources should load successfully)
+- [x] 5.18 Save all proof artifact screenshots to `docs/specs/10-spec-visit-booking-ui/proof-artifacts/` directory
+- [x] 5.19 Create summary document `docs/specs/10-spec-visit-booking-ui/proof-artifacts/VALIDATION_SUMMARY.md` listing all proof artifacts with descriptions
+- [x] 5.20 Review against spec: verify all functional requirements from Units 1-4 are implemented and demonstrable
+- [x] 5.21 Commit proof artifacts: "docs: add proof artifacts for visit booking UI enhancement (Spec 10 validation)"
+- [x] 5.22 Final commit for any remaining refactoring: "refactor: improve code quality for visit booking UI (REFACTOR phase - Spec 10)"

@@ -80,7 +80,7 @@
 - [x] 2.15 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify layout tests pass (tests 1.4, 1.5, 1.6, 1.11)
 - [x] 2.16 Commit changes with message "feat: implement two-column card layout for visit booking (GREEN phase - Spec 10 Unit 1)"
 
-### [~] 3.0 GREEN Phase - Implement Enhanced Appointment Form with Validation
+### [x] 3.0 GREEN Phase - Implement Enhanced Appointment Form with Validation
 
 #### 3.0 Proof Artifact(s)
 
@@ -113,9 +113,9 @@
 - [x] 3.18 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify form tests pass (tests 1.7, 1.10) - 8/10 tests passing, 2 skipped
 - [x] 3.19 Update `e2e-tests/tests/features/visit-scheduling.spec.ts` to work with new card-based layout if needed
 - [x] 3.20 Run full E2E suite: `cd e2e-tests && npm test` and verify all visit-related tests pass
-- [ ] 3.21 Commit changes with message "feat: implement enhanced appointment form with validation (GREEN phase - Spec 10 Unit 2)"
+- [x] 3.21 Commit changes with message "feat: implement enhanced appointment form with validation (GREEN phase - Spec 10 Unit 2)"
 
-### [ ] 4.0 GREEN Phase - Implement Previous Visits Table with History Display
+### [~] 4.0 GREEN Phase - Implement Previous Visits Table with History Display
 
 #### 4.0 Proof Artifact(s)
 
@@ -127,23 +127,23 @@
 
 #### 4.0 Tasks
 
-- [ ] 4.1 Below the two-column row, create full-width section: `<div class="row mt-4"><div class="col-12">`
-- [ ] 4.2 Add section header: `<h4>Previous Visits</h4>` (use i18n key `#{previousVisits}` which should already exist)
-- [ ] 4.3 Create responsive table wrapper: `<div class="table-responsive">`
-- [ ] 4.4 Create table structure: `<table class="table table-striped">` with `<thead>` containing columns: Date, Time, Veterinarian, Description (use i18n keys)
-- [ ] 4.5 Add empty state conditional: `<div th:if="${pet.visits.empty}" class="text-muted text-center py-4">` with message "No previous visits found. New visits will appear here after scheduling."
-- [ ] 4.6 Add i18n key to `messages.properties`: `visit.noPreviousVisits=No previous visits found. New visits will appear here after scheduling.`
-- [ ] 4.7 Create table body with loop: `<tbody><tr th:if="${!pet.visits.empty}" th:each="visit : ${pet.visits}">`
-- [ ] 4.8 Add Date column: `<td th:text="${#temporals.format(visit.date, 'yyyy-MM-dd')}">2024-01-15</td>`
-- [ ] 4.9 Add Time column: `<td th:text="${visit.startTime != null ? visit.startTime.toString() : '-'}">10:00</td>` (format as HH:mm if possible)
-- [ ] 4.10 Add Veterinarian column: `<td th:text="${visit.vet != null ? 'Dr. ' + visit.vet.lastName : '-'}">Dr. Carter</td>`
-- [ ] 4.11 Add Description column: `<td th:text="${visit.description}">Annual checkup</td>`
-- [ ] 4.12 Verify controller sorts visits by date descending: in `VisitController.java`, ensure visits are sorted (may need to add sorting logic or use `@OrderBy` on Visit entity)
-- [ ] 4.13 Test with pet that has no visits: navigate to http://localhost:8080/owners/2/pets/2/visits/new (find a pet with no visits) and verify empty state message displays
-- [ ] 4.14 Test with pet that has visits: navigate to http://localhost:8080/owners/1/pets/1/visits/new and verify table displays with all columns populated
-- [ ] 4.15 Create a new visit, verify redirect to owner details, then navigate back to visits page and verify new visit appears in table
-- [ ] 4.16 Test responsive table: resize browser to mobile width and verify table remains readable (horizontal scroll if needed)
-- [ ] 4.17 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify previous visits tests pass (tests 1.8, 1.9)
+- [x] 4.1 Below the two-column row, create full-width section: `<div class="row mt-4"><div class="col-12">` (completed in Task 2.0)
+- [x] 4.2 Add section header: `<h4>Previous Visits</h4>` (use i18n key `#{previousVisits}` which should already exist)
+- [x] 4.3 Create responsive table wrapper: `<div class="table-responsive">`
+- [x] 4.4 Create table structure: `<table class="table table-striped">` with `<thead>` containing columns: Date, Time, Veterinarian, Description (use i18n keys)
+- [x] 4.5 Add empty state conditional: `<div th:if="${pet.visits.empty}" class="text-muted text-center py-4">` with message "No previous visits found. New visits will appear here after scheduling."
+- [x] 4.6 Add i18n key to `messages.properties`: `visit.noPreviousVisits=No previous visits found. New visits will appear here after scheduling.`
+- [x] 4.7 Create table body with loop: `<tbody><tr th:if="${!pet.visits.empty}" th:each="visit : ${pet.visits}">`
+- [x] 4.8 Add Date column: `<td th:text="${#temporals.format(visit.date, 'yyyy-MM-dd')}">2024-01-15</td>`
+- [x] 4.9 Add Time column: `<td th:text="${visit.startTime != null ? visit.startTime.toString() : '-'}">10:00</td>` (format as HH:mm if possible)
+- [x] 4.10 Add Veterinarian column: `<td th:text="${visit.vet != null ? 'Dr. ' + visit.vet.lastName : '-'}">Dr. Carter</td>`
+- [x] 4.11 Add Description column: `<td th:text="${visit.description}">Annual checkup</td>`
+- [x] 4.12 Verify controller sorts visits by date descending: in `VisitController.java`, ensure visits are sorted (may need to add sorting logic or use `@OrderBy` on Visit entity)
+- [x] 4.13 Test with pet that has no visits: navigate to http://localhost:8080/owners/2/pets/2/visits/new (find a pet with no visits) and verify empty state message displays
+- [x] 4.14 Test with pet that has visits: navigate to http://localhost:8080/owners/1/pets/1/visits/new and verify table displays with all columns populated
+- [x] 4.15 Create a new visit, verify redirect to owner details, then navigate back to visits page and verify new visit appears in table
+- [x] 4.16 Test responsive table: resize browser to mobile width and verify table remains readable (horizontal scroll if needed)
+- [x] 4.17 Run `cd e2e-tests && npm test -- visit-booking-ui.spec.ts` and verify previous visits tests pass (tests 1.8, 1.9) - Test 1.8 passed, 1.9 skipped
 - [ ] 4.18 Commit changes with message "feat: implement previous visits table with empty state (GREEN phase - Spec 10 Unit 3)"
 
 ### [ ] 5.0 REFACTOR & Validation Phase - Quality Assurance and Proof Artifacts

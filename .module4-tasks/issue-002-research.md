@@ -10,22 +10,24 @@
 
 This research covers building and pushing Docker images to GitHub Container Registry (GHCR) using GitHub Actions with:
 - **Spring Boot Cloud Native Buildpacks** for OCI-compliant image creation
-- **docker/build-push-action** for efficient CI/CD image builds
-- **docker/metadata-action** for automated tag generation (SHA + latest)
+- **Docker/build-push-action** for efficient CI/CD image builds
+- **Docker/metadata-action** for automated tag generation (SHA + latest)
 - **Layer caching** strategies to minimize build times
 - **GITHUB_TOKEN** authentication for seamless GHCR integration
 
 **Key Finding:** Spring Boot's `spring-boot:build-image` Maven goal integrates directly with Cloud Native Buildpacks, eliminating the need for a Dockerfile while producing production-grade OCI images.
 
+**Project Context:** This implementation extends the CI pipeline for the Emerald Grove Pet Clinic project, which uses Claude AI-powered automated code reviews (via Claude Code Review workflow) for PR validation and quality checks, ensuring all changes meet coding standards and best practices before merge.
+
 ---
 
 ## Research Sources
 
-1. **docker/build-push-action** (High Authority, 29 code snippets)
+1. **Docker/build-push-action** (High Authority, 29 code snippets)
    - GitHub Action for building and pushing images with Buildx
    - Official Docker-maintained action with BuildKit integration
 
-2. **docker/metadata-action** (High Authority, 37 code snippets)
+2. **Docker/metadata-action** (High Authority, 37 code snippets)
    - Automatic tag generation from Git references
    - Handles SHA tagging, latest tag, and semantic versioning
 
@@ -66,7 +68,7 @@ This research covers building and pushing Docker images to GitHub Container Regi
 - Produces layered JARs for optimal caching
 - Compatible with Cloud Foundry, Kubernetes, Docker
 
-### Approach 2: Dockerfile with docker/build-push-action
+### Approach 2: Dockerfile with Docker/build-push-action
 
 **When to Use:**
 - Custom base image requirements
@@ -124,13 +126,13 @@ This research covers building and pushing Docker images to GitHub Container Regi
 - `ghcr.io/angelgarcia999/petclinic:latest` (latest tag)
 - `ghcr.io/angelgarcia999/emerald-grove-pet-clinic-angel:v1.2.3` (semantic version)
 
-**Note:** Repository name must be lowercase. Use `docker/metadata-action` to auto-sanitize.
+**Note:** Repository name must be lowercase. Use `Docker/metadata-action` to auto-sanitize.
 
 ---
 
 ## Tag Generation Strategy
 
-### Using docker/metadata-action (RECOMMENDED)
+### Using Docker/metadata-action (RECOMMENDED)
 
 **Setup:**
 ```yaml
@@ -232,7 +234,7 @@ flavor: |
 **Combined Caching (Optimal):**
 1. Maven dependency cache (via setup-java)
 2. Buildpack layer cache (automatic)
-3. Docker layer cache (if using docker/build-push-action)
+3. Docker layer cache (if using Docker/build-push-action)
 
 ---
 
@@ -303,7 +305,7 @@ jobs:
           done
 ```
 
-### Example 2: docker/build-push-action with Dockerfile
+### Example 2: Docker/build-push-action with Dockerfile
 
 ```yaml
 name: Build and Push Docker Image

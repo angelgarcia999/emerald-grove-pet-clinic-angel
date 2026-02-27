@@ -22,7 +22,7 @@ Use Terraform to create Azure PostgreSQL Flexible Server for the Pet Clinic data
 - [ ] Database name: `petclinic`
 - [ ] PostgreSQL version: 14 or higher
 - [ ] Tier: Burstable B1ms (cheap for dev/test)
-- [ ] Outputs: connection string
+- [ ] Outputs: hostname, database name, port (password marked sensitive)
 - [ ] `terraform apply` creates database successfully
 - [ ] Can connect: `psql -h <hostname> -U <user> -d petclinic`
 
@@ -30,7 +30,7 @@ Use Terraform to create Azure PostgreSQL Flexible Server for the Pet Clinic data
 
 ## AI Prompt
 
-```
+```text
 Generate Terraform configuration for Azure PostgreSQL:
 
 1. Resource: azurerm_postgresql_flexible_server
@@ -57,10 +57,15 @@ Generate Terraform configuration for Azure PostgreSQL:
    - Document: Do NOT use "Allow Azure services" blanket rule
    - Example: Container App outbound IPs only
 
-4. Output:
-   - JDBC connection string
-   - Hostname
-   - Database name
+4. Outputs (non-sensitive only):
+   - Hostname (e.g., petclinic-db.postgres.database.azure.com)
+   - Database name (e.g., petclinic)
+   - Port (5432)
+   - Username (for reference)
+
+   Note: DO NOT output connection string or password
+   Password must be marked with sensitive = true
+   Retrieve password from Azure Key Vault or use secret reference
 ```
 
 ---

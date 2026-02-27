@@ -30,7 +30,7 @@ After tests pass in CI, automatically build a Docker image and push it to GitHub
 
 ## AI Prompt
 
-```
+```text
 Add Docker build and push steps to GitHub Actions workflow:
 
 1. Add workflow permissions (at workflow or job level):

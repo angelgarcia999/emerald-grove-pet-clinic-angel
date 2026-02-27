@@ -45,11 +45,12 @@ Generate Terraform for Azure Container App:
    - Memory: 1Gi
    - Min replicas: 1, Max replicas: 3
 
-3. Environment variables:
-   - SPRING_PROFILES_ACTIVE: postgres
-   - POSTGRES_URL: jdbc:postgresql://<from database output>
-   - POSTGRES_USER: petclinic_admin
-   - POSTGRES_PASSWORD: <from variable, sensitive>
+3. Secrets and Environment variables:
+   - Create Container App secret: db-password
+   - SPRING_PROFILES_ACTIVE: postgres (env var)
+   - POSTGRES_URL: jdbc:postgresql://<from database output> (env var)
+   - POSTGRES_USER: petclinic_admin (env var)
+   - POSTGRES_PASSWORD: reference secret 'db-password' (NOT inline value)
 
 4. Ingress:
    - External: true

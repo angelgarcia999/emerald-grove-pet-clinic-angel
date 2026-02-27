@@ -18,7 +18,7 @@ Use Terraform to create Azure PostgreSQL Flexible Server for the Pet Clinic data
 - [ ] Terraform file: `terraform/database.tf`
 - [ ] Creates: azurerm_postgresql_flexible_server
 - [ ] Creates: azurerm_postgresql_flexible_server_database
-- [ ] Creates: Firewall rule (allow Azure services)
+- [ ] Creates: VNet integration OR specific IP firewall rules (no blanket Azure services allow)
 - [ ] Database name: `petclinic`
 - [ ] PostgreSQL version: 14 or higher
 - [ ] Tier: Burstable B1ms (cheap for dev/test)
@@ -47,9 +47,15 @@ Generate Terraform configuration for Azure PostgreSQL:
    - Charset: UTF8
    - Collation: en_US.utf8
 
-3. Resource: azurerm_postgresql_flexible_server_firewall_rule
-   - Allow Azure services
-   - (For production, restrict to specific IPs)
+3. Network Security (choose one):
+   Option A: VNet Integration (preferred for production)
+   - Integrate database into Container App VNet
+   - Use Private Endpoint for secure access
+
+   Option B: Scoped Firewall Rules (for development)
+   - Add specific IP addresses only
+   - Document: Do NOT use "Allow Azure services" blanket rule
+   - Example: Container App outbound IPs only
 
 4. Output:
    - JDBC connection string

@@ -16,7 +16,7 @@ All issues are in this folder - just work through them in order (001 → 007).
 
 ## Issues (Work Through in Order)
 
-- [ ] **001** - Add all tests to CI (unit + integration)
+- [ ] **001** - Add unit tests to CI
 - [ ] **002** - Build & push Docker images automatically
 - [ ] **003** - Setup Terraform + Azure (install tools & initialize)
 - [ ] **004** - Create Azure database infrastructure (PostgreSQL)

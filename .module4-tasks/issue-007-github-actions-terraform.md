@@ -33,14 +33,19 @@ Automate Terraform deployment in GitHub Actions so that pushing to main automati
 ### 1. Create Azure Service Principal
 
 ```bash
-# Create service principal for GitHub Actions
+# IMPORTANT: Scope to resource group, not entire subscription (least privilege)
+# First, create the resource group if it doesn't exist:
+az group create --name rg-petclinic-prod --location eastus
+
+# Create service principal scoped to resource group only
 az ad sp create-for-rbac \
   --name "github-actions-petclinic" \
   --role contributor \
-  --scopes /subscriptions/<SUBSCRIPTION_ID> \
+  --scopes /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/rg-petclinic-prod \
   --sdk-auth
 
 # Save the JSON output - you'll need it for GitHub secrets
+# Note: Scoped to resource group, NOT subscription-wide
 ```
 
 ### 2. Add GitHub Secrets
@@ -130,8 +135,12 @@ git push origin main
 
 ## Notes
 
-- **Security:** Service Principal has minimal permissions (contributor)
-- **State:** Terraform state stored locally in repo (consider Azure Storage backend for production)
+- **Security:** Service Principal scoped to resource group only (least privilege)
+- **State:** MUST use remote backend (Azure Storage with locking) - never commit .tfstate to repo
+  - Create storage account for Terraform state
+  - Configure backend in terraform/backend.tf
+  - Use state locking to prevent concurrent modifications
+  - Add backend config to GitHub Actions workflow
 - **Secrets:** Never commit credentials to git
 - **Rollback:** Git revert if deployment fails
 

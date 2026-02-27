@@ -33,21 +33,28 @@ After tests pass in CI, automatically build a Docker image and push it to GitHub
 ```
 Add Docker build and push steps to GitHub Actions workflow:
 
-1. After tests pass, build image:
+1. Add workflow permissions (at workflow or job level):
+   permissions:
+     contents: read
+     packages: write
+
+2. After tests pass, build image:
    - Use docker/build-push-action@v5
    - Build from Dockerfile (or use spring-boot:build-image)
    - Tag with: ghcr.io/angelgarcia999/petclinic:${{ github.sha }}
    - Tag with: ghcr.io/angelgarcia999/petclinic:latest (if main branch)
 
-2. Login to GitHub Container Registry:
+3. Login to GitHub Container Registry:
    - Use docker/login-action@v3
    - Registry: ghcr.io
    - Username: ${{ github.actor }}
    - Password: ${{ secrets.GITHUB_TOKEN }}
 
-3. Push image to registry
+4. Push image to registry
 
 Include caching for faster builds.
+
+IMPORTANT: Workflow must have 'packages: write' permission for GHCR push to succeed.
 ```
 
 ---

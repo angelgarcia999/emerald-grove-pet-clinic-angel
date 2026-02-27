@@ -66,11 +66,12 @@ mvn --batch-mode --update-snapshots verify
 
 **For our case (unit tests only):**
 ```bash
-./mvnw test
+./mvnw --batch-mode test
 ```
 - Uses Maven wrapper (no Maven installation needed)
+- `--batch-mode` disables interactive output (CI-friendly)
 - Runs only unit tests (faster)
-- Integration tests handled separately (Issue #002)
+- Integration tests will be added in a future iteration (not in current 7 issues)
 
 ---
 
@@ -94,15 +95,13 @@ mvn --batch-mode --update-snapshots verify
   uses: actions/upload-artifact@v4
   with:
     name: test-reports
-    path: |
-      target/surefire-reports/
-      target/site/jacoco/
+    path: target/surefire-reports/
 ```
 
 **Key points:**
 - `if: always()` ensures upload even on test failure
 - Surefire reports: `target/surefire-reports/`
-- JaCoCo reports: `target/site/jacoco/` (for Issue #003)
+- JaCoCo coverage reports: Not included in current scope (artifacts upload skipped per user preference)
 
 ---
 
@@ -170,7 +169,7 @@ jobs:
           cache: maven
 
       - name: Run unit tests
-        run: ./mvnw test
+        run: ./mvnw --batch-mode test
 
       - name: Upload test reports
         if: always()
@@ -197,13 +196,14 @@ target/surefire-reports/
 └── *.html              # HTML reports (if configured)
 ```
 
-### JaCoCo Coverage (for Issue #003)
+### JaCoCo Coverage (Future Enhancement)
 ```
 target/site/jacoco/
 ├── index.html
 ├── jacoco.xml
 └── jacoco.csv
 ```
+**Note:** Code coverage enforcement not included in current 7-issue scope.
 
 ---
 
@@ -249,7 +249,7 @@ timeout-minutes: 10
 ### Local Test First
 ```bash
 # Ensure tests pass locally
-./mvnw test
+./mvnw --batch-mode test
 
 # Check what will be uploaded
 ls -la target/surefire-reports/
@@ -326,7 +326,7 @@ From Issue #001, verify each item:
 
 - [ ] Workflow file at `.github/workflows/maven-test.yml` ✅
 - [ ] Triggers on `push` and `pull_request` ✅
-- [ ] Runs `./mvnw test` ✅
+- [ ] Runs `./mvnw --batch-mode test` ✅
 - [ ] Uses Java 17 ✅
 - [ ] Caches Maven dependencies (`cache: maven`) ✅
 - [ ] Fails build if tests fail (default Maven behavior) ✅
@@ -339,7 +339,7 @@ From Issue #001, verify each item:
 
 1. **Create workflow file:** `.github/workflows/maven-test.yml`
 2. **Use AI to generate:** Copy the workflow design above to Claude
-3. **Test locally:** `./mvnw test` (ensure it works)
+3. **Test locally:** `./mvnw --batch-mode test` (ensure it works)
 4. **Push to branch:** Create feature branch
 5. **Verify in GitHub:** Check Actions tab
 6. **Merge when green:** PR → main

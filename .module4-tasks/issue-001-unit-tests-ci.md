@@ -89,7 +89,7 @@ Generate a GitHub Actions workflow file that:
 # 1. Go to GitHub Actions tab
 # 2. Verify workflow triggered
 # 3. Check that tests ran
-# 4. Verify artifacts uploaded
+# 4. Review test results in workflow logs
 ```
 
 ---
@@ -99,6 +99,6 @@ Generate a GitHub Actions workflow file that:
 - [ ] Code committed and pushed
 - [ ] Workflow runs successfully in GitHub
 - [ ] Tests execute and pass
-- [ ] Test reports accessible as artifacts
+- [ ] Test results visible in workflow logs (artifacts skipped)
 - [ ] Documented in commit message
 - [ ] This issue file updated with status: ✅ Closed

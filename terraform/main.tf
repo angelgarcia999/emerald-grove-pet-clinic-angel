@@ -6,7 +6,7 @@
 resource "azurerm_resource_group" "main" {
   name     = "${var.project_name}-${var.environment}-rg"
   location = var.location
-  tags     = var.tags
+  tags     = local.common_tags
 }
 
 # Data source: Current Azure subscription
@@ -19,7 +19,8 @@ locals {
   common_tags = merge(
     var.tags,
     {
-      CreatedBy = "Terraform"
+      CreatedBy   = "Terraform"
+      Environment = var.environment
     }
   )
 }

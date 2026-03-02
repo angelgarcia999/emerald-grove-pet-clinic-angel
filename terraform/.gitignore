@@ -5,10 +5,10 @@
 
 # Terraform directory
 .terraform/
-.terraform.lock.hcl
 
 # Terraform plan files
 *.tfplan
+tfplan
 
 # Terraform variable files (may contain secrets)
 *.tfvars

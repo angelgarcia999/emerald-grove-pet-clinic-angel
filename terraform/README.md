@@ -35,7 +35,8 @@ terraform/
 ├── terraform.tf        # Terraform and provider versions
 ├── providers.tf        # Azure provider configuration
 ├── backend.tf         # State backend configuration
-├── main.tf            # Primary resources
+├── main.tf            # Primary resources (resource group, locals)
+├── database.tf        # PostgreSQL Flexible Server and database
 ├── variables.tf       # Input variables
 ├── outputs.tf         # Output values
 └── README.md          # This file
@@ -88,9 +89,25 @@ Currently using **local backend** for development:
   - Location: Configurable via `location` variable
   - Tags: Common tags for cost tracking
 
+- **PostgreSQL Flexible Server** (`azurerm_postgresql_flexible_server.main`) - Issue #004
+  - Name: `petclinic-db-{environment}`
+  - SKU: Burstable B1ms (`B_Standard_B1ms`)
+  - PostgreSQL version: 14
+  - Storage: 32GB
+  - Backup retention: 1 day (minimal for temporary/dev deployment)
+
+- **PostgreSQL Database** (`azurerm_postgresql_flexible_server_database.main`) - Issue #004
+  - Name: `petclinic`
+  - Charset: UTF8
+  - Collation: en_US.utf8
+  - Note: No `prevent_destroy` since this is a temporary dev environment
+
+- **PostgreSQL Firewall Rules** (`azurerm_postgresql_flexible_server_firewall_rule.allowed_ips`) - Issue #004
+  - Dynamic rules from `allowed_ip_addresses` variable
+  - Scoped to specific IPs only (no blanket Azure services rule)
+
 ### Planned Resources (Future Issues)
 
-- **Azure Database for PostgreSQL** (Issue #004)
 - **Azure Container Apps** (Issue #005)
 - **Networking** (VNet, subnets)
 - **Monitoring** (Application Insights)
@@ -120,10 +137,91 @@ terraform state list
 terraform destroy
 ```
 
+## Database Configuration
+
+### Required Variables
+
+The database requires an administrator password to be provided. This is a sensitive variable with no default.
+
+**⚠️ SECURITY: Never pass passwords via command line arguments** (`-var="db_admin_password=..."`).
+Command line arguments are:
+- Stored in shell history
+- Visible in process lists (`ps aux`)
+- Often logged by CI/CD systems
+
+**Secure alternatives:**
+
+```bash
+# Option 1: Environment variable (recommended for local dev)
+export TF_VAR_db_admin_password="YourSecurePassword123!"
+terraform apply
+
+# Option 2: terraform.tfvars file (git-ignored)
+# Create terraform.tfvars and add:
+# db_admin_password = "YourSecurePassword123!"
+terraform apply
+
+# Option 3: Azure Key Vault (recommended for production)
+# Reference secrets from Azure Key Vault in your terraform.tfvars
+
+# Option 4: Terraform Cloud / HCP Terraform
+# Store as a sensitive variable in your workspace
+
+# Option 5: HashiCorp Vault
+# Use Vault provider to fetch secrets at runtime
+```
+
+### Firewall Rules
+
+By default, no firewall rules are created (the database is not accessible from any IP). Add specific IPs:
+
+```bash
+# In terraform.tfvars or via environment variable
+allowed_ip_addresses = {
+  "my-office" = {
+    start_ip = "203.0.113.10"
+    end_ip   = "203.0.113.10"
+  }
+  "vpn-range" = {
+    start_ip = "198.51.100.0"
+    end_ip   = "198.51.100.255"
+  }
+}
+```
+
+**IMPORTANT**: Do NOT add a rule with `0.0.0.0` to `0.0.0.0` (this is the blanket "Allow Azure services" rule and is explicitly prohibited).
+
+### Testing Database Connection
+
+```bash
+# Get connection info
+terraform output db_hostname
+terraform output db_admin_login
+
+# Connect with psql
+export DB_HOST=$(terraform output -raw db_hostname)
+export DB_ADMIN_LOGIN=$(terraform output -raw db_admin_login)
+psql -h $DB_HOST -U $DB_ADMIN_LOGIN -d petclinic
+```
+
+### Database Outputs
+
+| Output | Description |
+|--------|-------------|
+| `db_hostname` | FQDN of the PostgreSQL server |
+| `db_name` | Database name (`petclinic`) |
+| `db_port` | Server port (`5432`) |
+| `db_admin_login` | Administrator username |
+| `db_server_id` | Azure resource ID of the server |
+
+**Note**: Password is intentionally NOT included in outputs. Retrieve it from Azure Key Vault or your secret management solution.
+
 ## Security
 
 - **Never commit** `.tfstate` files or `.tfvars` files with secrets
 - Use environment variables for sensitive values
+- Database password is marked as `sensitive` in Terraform
+- Firewall rules are scoped to specific IPs (no blanket Azure services rule)
 - Enable Azure Storage backend with encryption for production
 - Scope service principals to minimum required permissions
 
@@ -153,7 +251,8 @@ terraform init -upgrade
 
 - [Terraform Azure Provider Docs](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
 - [Azure CLI Reference](https://docs.microsoft.com/en-us/cli/azure/)
-- [Module 4 Research](../.module4-tasks/issue-003-research.md)
+- [Module 4 Research - Issue #003](../.module4-tasks/issue-003-research.md)
+- [Module 4 Research - Issue #004](../.module4-tasks/issue-004-research.md)
 
 ---
 

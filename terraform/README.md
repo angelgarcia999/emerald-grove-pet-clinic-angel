@@ -94,13 +94,13 @@ Currently using **local backend** for development:
   - SKU: Burstable B1ms (`B_Standard_B1ms`)
   - PostgreSQL version: 14
   - Storage: 32GB
-  - Backup retention: 7 days
+  - Backup retention: 1 day (minimal for temporary/dev deployment)
 
 - **PostgreSQL Database** (`azurerm_postgresql_flexible_server_database.main`) - Issue #004
   - Name: `petclinic`
   - Charset: UTF8
   - Collation: en_US.utf8
-  - Lifecycle: `prevent_destroy = true`
+  - Note: No `prevent_destroy` since this is a temporary dev environment
 
 - **PostgreSQL Firewall Rules** (`azurerm_postgresql_flexible_server_firewall_rule.allowed_ips`) - Issue #004
   - Dynamic rules from `allowed_ip_addresses` variable
@@ -141,14 +141,34 @@ terraform destroy
 
 ### Required Variables
 
-The database requires an administrator password to be provided. This is a sensitive variable with no default:
+The database requires an administrator password to be provided. This is a sensitive variable with no default.
+
+**⚠️ SECURITY: Never pass passwords via command line arguments** (`-var="db_admin_password=..."`).
+Command line arguments are:
+- Stored in shell history
+- Visible in process lists (`ps aux`)
+- Often logged by CI/CD systems
+
+**Secure alternatives:**
 
 ```bash
-# Option 1: Environment variable (recommended)
+# Option 1: Environment variable (recommended for local dev)
 export TF_VAR_db_admin_password="YourSecurePassword123!"
+terraform apply
 
-# Option 2: Command line
-terraform apply -var="db_admin_password=YourSecurePassword123!"
+# Option 2: terraform.tfvars file (git-ignored)
+# Create terraform.tfvars and add:
+# db_admin_password = "YourSecurePassword123!"
+terraform apply
+
+# Option 3: Azure Key Vault (recommended for production)
+# Reference secrets from Azure Key Vault in your terraform.tfvars
+
+# Option 4: Terraform Cloud / HCP Terraform
+# Store as a sensitive variable in your workspace
+
+# Option 5: HashiCorp Vault
+# Use Vault provider to fetch secrets at runtime
 ```
 
 ### Firewall Rules
@@ -180,7 +200,8 @@ terraform output db_admin_login
 
 # Connect with psql
 export DB_HOST=$(terraform output -raw db_hostname)
-psql -h $DB_HOST -U petclinic_admin -d petclinic
+export DB_ADMIN_LOGIN=$(terraform output -raw db_admin_login)
+psql -h $DB_HOST -U $DB_ADMIN_LOGIN -d petclinic
 ```
 
 ### Database Outputs

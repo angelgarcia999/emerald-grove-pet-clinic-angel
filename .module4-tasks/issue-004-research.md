@@ -15,7 +15,7 @@ Create Terraform configuration for Azure PostgreSQL Flexible Server to serve as 
 - PostgreSQL version: 14 or higher
 - Tier: Burstable B1ms (`B_Standard_B1ms`)
 - Storage: 32GB (32768 MB)
-- Backup retention: 7 days
+- Backup retention: 1 day (minimal for temporary deployment)
 - Administrator login: `petclinic_admin`
 - Administrator password: via variable (marked sensitive)
 - Outputs: hostname, database name, port, username (password NOT output)
@@ -67,7 +67,7 @@ azurerm_resource_group.main (existing)
   |     - SKU: B_Standard_B1ms
   |     - Version: 14
   |     - Storage: 32768 MB
-  |     - Backup: 7 days
+  |     - Backup: 1 day
   |
   +-- azurerm_postgresql_flexible_server_database.main (new)
   |     - Name: petclinic

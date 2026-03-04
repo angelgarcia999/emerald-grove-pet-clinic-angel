@@ -78,4 +78,12 @@ variable "allowed_ip_addresses" {
     end_ip   = string
   }))
   default = {}
+
+  validation {
+    condition = alltrue([
+      for k, v in var.allowed_ip_addresses :
+      !(v.start_ip == "0.0.0.0" && v.end_ip == "0.0.0.0")
+    ])
+    error_message = "The 0.0.0.0 to 0.0.0.0 range (blanket Azure services rule) is not allowed. Use specific IP addresses only."
+  }
 }

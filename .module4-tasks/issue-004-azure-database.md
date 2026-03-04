@@ -1,6 +1,6 @@
 # Issue #004: Create Azure PostgreSQL Database
 
-**Status:** 🟡 Open
+**Status:** 🟢 Implementation Complete (pending `terraform apply`)
 **Priority:** High
 **Estimated Time:** 3 hours (with AI: 1.5 hours)
 **Phase:** 2 - Terraform Deployment
@@ -15,14 +15,14 @@ Use Terraform to create Azure PostgreSQL Flexible Server for the Pet Clinic data
 
 ## Acceptance Criteria
 
-- [ ] Terraform file: `terraform/database.tf`
-- [ ] Creates: azurerm_postgresql_flexible_server
-- [ ] Creates: azurerm_postgresql_flexible_server_database
-- [ ] Creates: VNet integration OR specific IP firewall rules (no blanket Azure services allow)
-- [ ] Database name: `petclinic`
-- [ ] PostgreSQL version: 14 or higher
-- [ ] Tier: Burstable B1ms (cheap for dev/test)
-- [ ] Outputs: hostname, database name, port (password marked sensitive)
+- [x] Terraform file: `terraform/database.tf`
+- [x] Creates: azurerm_postgresql_flexible_server
+- [x] Creates: azurerm_postgresql_flexible_server_database
+- [x] Creates: VNet integration OR specific IP firewall rules (no blanket Azure services allow)
+- [x] Database name: `petclinic`
+- [x] PostgreSQL version: 14 or higher
+- [x] Tier: Burstable B1ms (cheap for dev/test)
+- [x] Outputs: hostname, database name, port (password marked sensitive)
 - [ ] `terraform apply` creates database successfully
 - [ ] Can connect: `psql -h <hostname> -U <user> -d petclinic`
 
@@ -104,7 +104,7 @@ psql -h $DB_HOST -U petclinic_admin -d petclinic
 
 ## Definition of Done
 
-- [ ] Terraform creates database
-- [ ] Can connect to database
-- [ ] Connection string available in outputs
-- [ ] Issue marked: ✅ Closed
+- [x] Terraform creates database (configuration validated via `terraform validate`)
+- [ ] Can connect to database (requires `terraform apply`)
+- [x] Connection string available in outputs (hostname, db_name, port, admin_login)
+- [ ] Issue marked: Closed (pending apply verification)

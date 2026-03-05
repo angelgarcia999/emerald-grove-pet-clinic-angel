@@ -1,7 +1,7 @@
 variable "location" {
   description = "Azure region for resources"
   type        = string
-  default     = "East US"
+  default     = "West US 2"
 }
 
 variable "environment" {
@@ -61,13 +61,13 @@ variable "db_version" {
 }
 
 variable "db_backup_retention_days" {
-  description = "Backup retention days for PostgreSQL Flexible Server (1-35). Use 1 for temporary/dev environments to minimize cost."
+  description = "Backup retention days for PostgreSQL Flexible Server (7-35). Azure requires minimum 7 days."
   type        = number
-  default     = 1
+  default     = 7
 
   validation {
-    condition     = var.db_backup_retention_days >= 1 && var.db_backup_retention_days <= 35
-    error_message = "Backup retention days must be between 1 and 35."
+    condition     = var.db_backup_retention_days >= 7 && var.db_backup_retention_days <= 35
+    error_message = "Backup retention days must be between 7 and 35."
   }
 }
 
@@ -85,5 +85,60 @@ variable "allowed_ip_addresses" {
       !(v.start_ip == "0.0.0.0" && v.end_ip == "0.0.0.0")
     ])
     error_message = "The 0.0.0.0 to 0.0.0.0 range (blanket Azure services rule) is not allowed. Use specific IP addresses only."
+  }
+}
+
+# -----------------------------------------------------------------------------
+# Container App Variables (Issue #005)
+# -----------------------------------------------------------------------------
+
+variable "container_image" {
+  description = "Container image to deploy in the Container App"
+  type        = string
+  default     = "ghcr.io/angelgarcia999/emerald-grove-pet-clinic-angel:latest"
+}
+
+variable "container_cpu" {
+  description = "CPU cores allocated to the container (e.g., 0.25, 0.5, 1.0)"
+  type        = number
+  default     = 0.5
+}
+
+variable "container_memory" {
+  description = "Memory allocated to the container (e.g., 0.5Gi, 1Gi, 2Gi)"
+  type        = string
+  default     = "1Gi"
+}
+
+variable "container_min_replicas" {
+  description = "Minimum number of container replicas"
+  type        = number
+  default     = 1
+
+  validation {
+    condition     = var.container_min_replicas >= 0 && var.container_min_replicas <= 30
+    error_message = "Minimum replicas must be between 0 and 30."
+  }
+}
+
+variable "container_max_replicas" {
+  description = "Maximum number of container replicas"
+  type        = number
+  default     = 3
+
+  validation {
+    condition     = var.container_max_replicas >= 1 && var.container_max_replicas <= 30
+    error_message = "Maximum replicas must be between 1 and 30."
+  }
+}
+
+variable "log_analytics_retention_days" {
+  description = "Log Analytics Workspace retention in days (30-730)"
+  type        = number
+  default     = 30
+
+  validation {
+    condition     = var.log_analytics_retention_days >= 30 && var.log_analytics_retention_days <= 730
+    error_message = "Log Analytics retention must be between 30 and 730 days."
   }
 }

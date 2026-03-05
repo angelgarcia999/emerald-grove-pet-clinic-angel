@@ -1,6 +1,6 @@
 # Issue #005: Create Azure Container App
 
-**Status:** 🟡 Open
+**Status:** ✅ Closed
 **Priority:** High
 **Estimated Time:** 4 hours (with AI: 2 hours)
 **Phase:** 2 - Terraform Deployment
@@ -15,17 +15,17 @@ Create Azure Container App that runs your Spring Boot Pet Clinic application. Th
 
 ## Acceptance Criteria
 
-- [ ] Terraform file: `terraform/container-app.tf`
-- [ ] Creates: azurerm_container_app_environment
-- [ ] Creates: azurerm_container_app
-- [ ] Pulls image: `ghcr.io/angelgarcia999/petclinic:latest`
-- [ ] Connects to PostgreSQL database (from Issue #004)
-- [ ] Exposes port 8080 with ingress
-- [ ] Environment variables configured (DB connection)
-- [ ] Health probes configured
-- [ ] `terraform apply` deploys app
-- [ ] App accessible via HTTPS URL
-- [ ] Can see Pet Clinic homepage in browser
+- [x] Terraform file: `terraform/container-app.tf`
+- [x] Creates: azurerm_container_app_environment
+- [x] Creates: azurerm_container_app
+- [x] Pulls image: `ghcr.io/angelgarcia999/petclinic:latest`
+- [x] Connects to PostgreSQL database (from Issue #004)
+- [x] Exposes port 8080 with ingress
+- [x] Environment variables configured (DB connection)
+- [x] Health probes configured
+- [x] `terraform apply` deploys app
+- [x] App accessible via HTTPS URL
+- [x] Can see Pet Clinic homepage in browser
 
 ---
 
@@ -108,9 +108,9 @@ az containerapp logs show \
 
 ## Definition of Done
 
-- [ ] Terraform deploys Container App
-- [ ] App accessible via HTTPS
-- [ ] Can see Pet Clinic homepage
-- [ ] Database connection working
-- [ ] Health endpoints responding
-- [ ] Issue marked: ✅ Closed
+- [x] Terraform deploys Container App
+- [x] App accessible via HTTPS
+- [x] Can see Pet Clinic homepage
+- [x] Database connection working
+- [x] Health endpoints responding
+- [x] Issue marked: ✅ Closed

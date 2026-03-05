@@ -1,6 +1,6 @@
 # Issue #006: Deploy Manually with Terraform
 
-**Status:** 🟡 Open
+**Status:** ✅ Closed
 **Priority:** High
 **Estimated Time:** 2 hours
 **Phase:** 2 - Terraform Deployment
@@ -17,14 +17,14 @@ Perform a complete manual deployment using Terraform to verify everything works 
 
 ## Acceptance Criteria
 
-- [ ] All Terraform files completed (Issues #003, #004, #005)
-- [ ] Run `terraform plan` - review what will be created
-- [ ] Run `terraform apply` - deploy to Azure
-- [ ] Verify all resources created in Azure Portal
-- [ ] App is running and accessible
-- [ ] Database is populated (can add owners, pets, visits)
-- [ ] No Terraform errors
-- [ ] Document deployment process
+- [x] All Terraform files completed (Issues #003, #004, #005)
+- [x] Run `terraform plan` - review what will be created
+- [x] Run `terraform apply` - deploy to Azure
+- [x] Verify all resources created in Azure Portal
+- [x] App is running and accessible
+- [x] Database is populated (can add owners, pets, visits)
+- [x] No Terraform errors
+- [x] Document deployment process
 
 ---
 
@@ -152,12 +152,12 @@ terraform apply
 
 ## Definition of Done
 
-- [ ] `terraform apply` succeeds
-- [ ] All resources exist in Azure
-- [ ] App is accessible and functional
-- [ ] Can perform CRUD operations
-- [ ] Deployment documented
-- [ ] Issue marked: ✅ Closed
+- [x] `terraform apply` succeeds
+- [x] All resources exist in Azure
+- [x] App is accessible and functional
+- [x] Can perform CRUD operations
+- [x] Deployment documented
+- [x] Issue marked: ✅ Closed
 
 ---
 

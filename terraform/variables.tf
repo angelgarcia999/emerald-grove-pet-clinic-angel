@@ -1,7 +1,13 @@
-variable "location" {
-  description = "Azure region for resources"
+# Terraform Variables for AWS App Runner + RDS
+
+# -----------------------------------------------------------------------------
+# General Variables
+# -----------------------------------------------------------------------------
+
+variable "aws_region" {
+  description = "AWS region for resources"
   type        = string
-  default     = "West US 2"
+  default     = "us-west-2"
 }
 
 variable "environment" {
@@ -16,129 +22,88 @@ variable "project_name" {
   default     = "petclinic"
 }
 
-variable "tags" {
-  description = "Common tags for all resources"
-  type        = map(string)
-  default = {
-    Project     = "Emerald Grove Pet Clinic"
-    ManagedBy   = "Terraform"
-    Environment = "dev"
-  }
+# -----------------------------------------------------------------------------
+# RDS PostgreSQL Variables
+# -----------------------------------------------------------------------------
+
+variable "db_instance_class" {
+  description = "RDS instance class"
+  type        = string
+  default     = "db.t3.micro"
 }
 
-# -----------------------------------------------------------------------------
-# Database Variables (Issue #004)
-# -----------------------------------------------------------------------------
+variable "db_allocated_storage" {
+  description = "Allocated storage in GB"
+  type        = number
+  default     = 20
+}
 
-variable "db_admin_login" {
-  description = "Administrator login for PostgreSQL Flexible Server"
+variable "db_name" {
+  description = "Database name"
+  type        = string
+  default     = "petclinic"
+}
+
+variable "db_username" {
+  description = "Database username"
   type        = string
   default     = "petclinic_admin"
 }
 
-variable "db_admin_password" {
-  description = "Administrator password for PostgreSQL Flexible Server. Must meet Azure complexity requirements."
+variable "db_password" {
+  description = "Database password"
   type        = string
   sensitive   = true
 }
 
-variable "db_sku_name" {
-  description = "SKU name for PostgreSQL Flexible Server (e.g., B_Standard_B1ms for Burstable)"
-  type        = string
-  default     = "B_Standard_B1ms"
-}
-
-variable "db_storage_mb" {
-  description = "Maximum storage allowed for PostgreSQL Flexible Server in megabytes"
-  type        = number
-  default     = 32768
-}
-
-variable "db_version" {
-  description = "PostgreSQL version for the Flexible Server"
-  type        = string
-  default     = "14"
-}
-
 variable "db_backup_retention_days" {
-  description = "Backup retention days for PostgreSQL Flexible Server (7-35). Azure requires minimum 7 days."
+  description = "Backup retention days (7-35)"
   type        = number
   default     = 7
-
-  validation {
-    condition     = var.db_backup_retention_days >= 7 && var.db_backup_retention_days <= 35
-    error_message = "Backup retention days must be between 7 and 35."
-  }
 }
 
-variable "allowed_ip_addresses" {
-  description = "Map of allowed IP address ranges for PostgreSQL firewall rules. Do NOT add blanket Azure services rule (0.0.0.0 to 0.0.0.0)."
-  type = map(object({
-    start_ip = string
-    end_ip   = string
-  }))
-  default = {}
-
-  validation {
-    condition = alltrue([
-      for k, v in var.allowed_ip_addresses :
-      !(v.start_ip == "0.0.0.0" && v.end_ip == "0.0.0.0")
-    ])
-    error_message = "The 0.0.0.0 to 0.0.0.0 range (blanket Azure services rule) is not allowed. Use specific IP addresses only."
-  }
+variable "db_engine_version" {
+  description = "PostgreSQL version"
+  type        = string
+  default     = "14.15"
 }
 
 # -----------------------------------------------------------------------------
-# Container App Variables (Issue #005)
+# App Runner Variables
 # -----------------------------------------------------------------------------
 
 variable "container_image" {
-  description = "Container image to deploy in the Container App"
+  description = "Container image to deploy"
   type        = string
   default     = "ghcr.io/angelgarcia999/emerald-grove-pet-clinic-angel:latest"
 }
 
-variable "container_cpu" {
-  description = "CPU cores allocated to the container (e.g., 0.25, 0.5, 1.0)"
-  type        = number
-  default     = 0.5
-}
-
-variable "container_memory" {
-  description = "Memory allocated to the container (e.g., 0.5Gi, 1Gi, 2Gi)"
+variable "app_runner_cpu" {
+  description = "CPU for App Runner (1024 = 1 vCPU, 2048 = 2 vCPU)"
   type        = string
-  default     = "1Gi"
+  default     = "1024"
 }
 
-variable "container_min_replicas" {
-  description = "Minimum number of container replicas"
+variable "app_runner_memory" {
+  description = "Memory for App Runner"
+  type        = string
+  default     = "2048"
+}
+
+variable "app_runner_min_size" {
+  description = "Minimum instances"
   type        = number
   default     = 1
-
-  validation {
-    condition     = var.container_min_replicas >= 0 && var.container_min_replicas <= 30
-    error_message = "Minimum replicas must be between 0 and 30."
-  }
 }
 
-variable "container_max_replicas" {
-  description = "Maximum number of container replicas"
+variable "app_runner_max_size" {
+  description = "Maximum instances"
   type        = number
   default     = 3
-
-  validation {
-    condition     = var.container_max_replicas >= 1 && var.container_max_replicas <= 30
-    error_message = "Maximum replicas must be between 1 and 30."
-  }
 }
 
-variable "log_analytics_retention_days" {
-  description = "Log Analytics Workspace retention in days (30-730)"
-  type        = number
-  default     = 30
-
-  validation {
-    condition     = var.log_analytics_retention_days >= 30 && var.log_analytics_retention_days <= 730
-    error_message = "Log Analytics retention must be between 30 and 730 days."
-  }
+variable "auto_deploy_enabled" {
+  description = "Enable automatic deployments when image updates"
+  type        = bool
+  default     = false
 }

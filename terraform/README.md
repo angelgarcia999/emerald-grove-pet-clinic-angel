@@ -1,261 +1,195 @@
-# Terraform Infrastructure
+# Pet Clinic AWS Deployment
 
-Infrastructure as Code (IaC) for Emerald Grove Pet Clinic Azure deployment.
-
-## Prerequisites
-
-- Terraform >= 1.6.0
-- Azure CLI >= 2.50.0
-- Azure account with active subscription
-
-## Quick Start
-
-```bash
-# 1. Authenticate with Azure
-az login
-
-# 2. Initialize Terraform
-terraform init
-
-# 3. Preview changes
-terraform plan
-
-# 4. Apply changes
-terraform apply
-
-# 5. Destroy resources (cleanup)
-terraform destroy
-```
-
-## Project Structure
-
-```
-terraform/
-├── .gitignore          # Ignore sensitive files
-├── terraform.tf        # Terraform and provider versions
-├── providers.tf        # Azure provider configuration
-├── backend.tf         # State backend configuration
-├── main.tf            # Primary resources (resource group, locals)
-├── database.tf        # PostgreSQL Flexible Server and database
-├── variables.tf       # Input variables
-├── outputs.tf         # Output values
-└── README.md          # This file
-```
-
-## Configuration
-
-### Variables
-
-Default values are defined in `variables.tf`. Override them by:
-
-**Option 1: Environment variables**
-```bash
-export TF_VAR_location="West US"
-export TF_VAR_environment="prod"
-```
-
-**Option 2: Variable file**
-```bash
-# Create terraform.tfvars
-location    = "West US"
-environment = "prod"
-
-# Apply with var file
-terraform apply -var-file="terraform.tfvars"
-```
-
-**Option 3: Command line**
-```bash
-terraform apply -var="location=West US" -var="environment=prod"
-```
-
-### Backend
-
-Currently using **local backend** for development:
-- State stored in `terraform.tfstate` (git-ignored)
-- Simple setup for solo development
-
-**Migration to Azure Storage backend** (recommended before production):
-1. Create Azure Storage account for state
-2. Update `backend.tf` with Azure Storage configuration
-3. Run `terraform init -migrate-state`
-
-## Resources
-
-### Current Resources
-
-- **Resource Group** (`azurerm_resource_group.main`)
-  - Name: `{project_name}-{environment}-rg`
-  - Location: Configurable via `location` variable
-  - Tags: Common tags for cost tracking
-
-- **PostgreSQL Flexible Server** (`azurerm_postgresql_flexible_server.main`) - Issue #004
-  - Name: `petclinic-db-{environment}`
-  - SKU: Burstable B1ms (`B_Standard_B1ms`)
-  - PostgreSQL version: 14
-  - Storage: 32GB
-  - Backup retention: 1 day (minimal for temporary/dev deployment)
-
-- **PostgreSQL Database** (`azurerm_postgresql_flexible_server_database.main`) - Issue #004
-  - Name: `petclinic`
-  - Charset: UTF8
-  - Collation: en_US.utf8
-  - Note: No `prevent_destroy` since this is a temporary dev environment
-
-- **PostgreSQL Firewall Rules** (`azurerm_postgresql_flexible_server_firewall_rule.allowed_ips`) - Issue #004
-  - Dynamic rules from `allowed_ip_addresses` variable
-  - Scoped to specific IPs only (no blanket Azure services rule)
-
-### Planned Resources (Future Issues)
-
-- **Azure Container Apps** (Issue #005)
-- **Networking** (VNet, subnets)
-- **Monitoring** (Application Insights)
-
-## Workflow
-
-```bash
-# Format code
-terraform fmt
-
-# Validate configuration
-terraform validate
-
-# Plan deployment
-terraform plan -out=tfplan
-
-# Apply plan
-terraform apply tfplan
-
-# Show current state
-terraform show
-
-# List resources
-terraform state list
-
-# Destroy all resources
-terraform destroy
-```
-
-## Database Configuration
-
-### Required Variables
-
-The database requires an administrator password to be provided. This is a sensitive variable with no default.
-
-**⚠️ SECURITY: Never pass passwords via command line arguments** (`-var="db_admin_password=..."`).
-Command line arguments are:
-- Stored in shell history
-- Visible in process lists (`ps aux`)
-- Often logged by CI/CD systems
-
-**Secure alternatives:**
-
-```bash
-# Option 1: Environment variable (recommended for local dev)
-export TF_VAR_db_admin_password="YourSecurePassword123!"
-terraform apply
-
-# Option 2: terraform.tfvars file (git-ignored)
-# Create terraform.tfvars and add:
-# db_admin_password = "YourSecurePassword123!"
-terraform apply
-
-# Option 3: Azure Key Vault (recommended for production)
-# Reference secrets from Azure Key Vault in your terraform.tfvars
-
-# Option 4: Terraform Cloud / HCP Terraform
-# Store as a sensitive variable in your workspace
-
-# Option 5: HashiCorp Vault
-# Use Vault provider to fetch secrets at runtime
-```
-
-### Firewall Rules
-
-By default, no firewall rules are created (the database is not accessible from any IP). Add specific IPs:
-
-```bash
-# In terraform.tfvars or via environment variable
-allowed_ip_addresses = {
-  "my-office" = {
-    start_ip = "203.0.113.10"
-    end_ip   = "203.0.113.10"
-  }
-  "vpn-range" = {
-    start_ip = "198.51.100.0"
-    end_ip   = "198.51.100.255"
-  }
-}
-```
-
-**IMPORTANT**: Do NOT add a rule with `0.0.0.0` to `0.0.0.0` (this is the blanket "Allow Azure services" rule and is explicitly prohibited).
-
-### Testing Database Connection
-
-```bash
-# Get connection info
-terraform output db_hostname
-terraform output db_admin_login
-
-# Connect with psql
-export DB_HOST=$(terraform output -raw db_hostname)
-export DB_ADMIN_LOGIN=$(terraform output -raw db_admin_login)
-psql -h $DB_HOST -U $DB_ADMIN_LOGIN -d petclinic
-```
-
-### Database Outputs
-
-| Output | Description |
-|--------|-------------|
-| `db_hostname` | FQDN of the PostgreSQL server |
-| `db_name` | Database name (`petclinic`) |
-| `db_port` | Server port (`5432`) |
-| `db_admin_login` | Administrator username |
-| `db_server_id` | Azure resource ID of the server |
-
-**Note**: Password is intentionally NOT included in outputs. Retrieve it from Azure Key Vault or your secret management solution.
-
-## Security
-
-- **Never commit** `.tfstate` files or `.tfvars` files with secrets
-- Use environment variables for sensitive values
-- Database password is marked as `sensitive` in Terraform
-- Firewall rules are scoped to specific IPs (no blanket Azure services rule)
-- Enable Azure Storage backend with encryption for production
-- Scope service principals to minimum required permissions
-
-## Troubleshooting
-
-### "Error: Subscription Not Found"
-
-```bash
-az login
-az account list --output table
-az account set --subscription "YOUR_SUBSCRIPTION_NAME"
-```
-
-### "Error: Backend Initialization Required"
-
-```bash
-terraform init
-```
-
-### "Error: Provider Not Found"
-
-```bash
-terraform init -upgrade
-```
-
-## Documentation
-
-- [Terraform Azure Provider Docs](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
-- [Azure CLI Reference](https://docs.microsoft.com/en-us/cli/azure/)
-- [Module 4 Research - Issue #003](../.module4-tasks/issue-003-research.md)
-- [Module 4 Research - Issue #004](../.module4-tasks/issue-004-research.md)
+Simple AWS App Runner + RDS deployment for Pet Clinic.
 
 ---
 
-**Managed By:** Terraform
-**Project:** Emerald Grove Pet Clinic
-**Module:** 4 - DevOps & Platform Engineering
+## **What You Have**
+
+- **App Runner Service** - Runs your Spring Boot container with auto-scaling
+- **RDS PostgreSQL** - Managed database (db.t3.micro)
+- **Auto HTTPS** - Automatic SSL certificate
+- **VPC Connector** - Secure connection between App Runner and RDS
+
+**Estimated Cost:** ~$20/month
+
+---
+
+## **Prerequisites**
+
+1. AWS CLI configured with `liatrio-forge` profile
+2. Terraform installed (>= 1.0)
+3. Database password ready
+
+---
+
+## **Deploy**
+
+### **1. Initialize Terraform**
+
+```bash
+cd terraform
+terraform init
+```
+
+### **2. Deploy Everything**
+
+```bash
+terraform apply -var="db_password=YourSecurePassword123!"
+```
+
+**What happens:**
+- Creates RDS PostgreSQL (~4 minutes)
+- Creates App Runner service (~3 minutes)
+- Outputs HTTPS URL
+
+**Total time: ~7 minutes**
+
+---
+
+## **Access Your App**
+
+After deployment completes:
+
+```bash
+# Get the URL
+terraform output app_url
+
+# Example output:
+# https://abc123xyz.us-west-2.awsapprunner.com
+```
+
+Open that URL in your browser!
+
+---
+
+## **Update Container Image**
+
+If you push a new image to GHCR:
+
+### **Option 1: Manual update**
+```bash
+terraform apply -var="db_password=YourSecurePassword123!"
+```
+
+App Runner does blue/green deployment (zero downtime).
+
+### **Option 2: Enable auto-deploy**
+```hcl
+# In variables.tf or via command line
+auto_deploy_enabled = true
+```
+
+App Runner automatically pulls new `:latest` images!
+
+---
+
+## **View Logs**
+
+```bash
+# Via AWS Console
+aws apprunner list-operations --service-arn $(terraform output -raw app_runner_service_arn)
+
+# Or visit:
+# https://console.aws.amazon.com/apprunner
+```
+
+---
+
+## **Destroy Everything**
+
+**When you're done testing:**
+
+```bash
+terraform destroy -var="db_password=YourSecurePassword123!"
+```
+
+**What happens:**
+- Deletes App Runner service (~2 minutes)
+- Deletes RDS database (~3 minutes)
+- Everything is gone
+
+**Total time: ~5 minutes**
+
+**Cost stops immediately** - no residual charges.
+
+---
+
+## **Cost Breakdown**
+
+| Resource | Type | Monthly Cost |
+|----------|------|--------------|
+| App Runner | 1 vCPU, 2GB RAM | ~$7 |
+| RDS PostgreSQL | db.t3.micro | ~$12 |
+| Data Transfer | Minimal | ~$1 |
+| **Total** | | **~$20/month** |
+
+**Free Tier:** RDS eligible for 12 months free (if new AWS account)
+
+---
+
+## **Troubleshooting**
+
+### **App not starting?**
+
+Check logs in AWS console or:
+```bash
+aws logs tail "/aws/apprunner/petclinic-dev" --follow
+```
+
+### **Database connection failed?**
+
+Verify:
+1. VPC connector is in same VPC as RDS
+2. Security group allows port 5432
+3. Database password is correct
+
+### **Want to SSH / debug container?**
+
+App Runner doesn't allow SSH. Check logs instead:
+```bash
+aws apprunner list-operations --service-arn $(terraform output -raw app_runner_service_arn)
+```
+
+---
+
+## **Files**
+
+```
+terraform/
+├── provider.tf          # AWS provider config
+├── variables.tf         # Input variables
+├── data.tf             # VPC/subnet lookups
+├── app-runner.tf       # App Runner service
+├── rds.tf              # PostgreSQL database
+├── security-groups.tf  # Firewall rules
+├── outputs.tf          # Outputs (URL, etc.)
+└── README.md           # This file
+```
+
+**Total:** 8 files, ~300 lines of code
+
+---
+
+## **Next Steps**
+
+After deploying:
+
+1. ✅ Open app URL in browser
+2. ✅ Test adding owners/pets
+3. ✅ Verify data persists
+4. ✅ When done: `terraform destroy`
+
+---
+
+## **Comparison to Azure**
+
+| Feature | Azure (blocked) | AWS App Runner |
+|---------|----------------|----------------|
+| Setup | Can't deploy | ✅ Works! |
+| Complexity | 10 files | 8 files |
+| Cost | ~$10/month | ~$20/month |
+| HTTPS | Auto | Auto |
+| Permissions | ❌ Blocked | ✅ Have access |
+
+**Result:** AWS App Runner gets you deployed! 🚀

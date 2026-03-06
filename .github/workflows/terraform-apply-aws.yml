@@ -59,6 +59,12 @@ jobs:
         run: |
           echo "### Terraform Outputs" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**App URL:** $(terraform output -raw app_url)" >> $GITHUB_STEP_SUMMARY
+
+          # Get app_url with error handling
+          APP_URL=$(terraform output -raw app_url 2>/dev/null || echo "Not available")
+          echo "**App URL:** $APP_URL" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**DB Endpoint:** $(terraform output -raw db_endpoint)" >> $GITHUB_STEP_SUMMARY
+
+          # Get db_endpoint with error handling
+          DB_ENDPOINT=$(terraform output -raw db_endpoint 2>/dev/null || echo "Not available")
+          echo "**DB Endpoint:** $DB_ENDPOINT" >> $GITHUB_STEP_SUMMARY

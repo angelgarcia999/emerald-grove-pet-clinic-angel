@@ -48,3 +48,32 @@ output "db_server_id" {
   description = "ID of the PostgreSQL Flexible Server"
   value       = azurerm_postgresql_flexible_server.main.id
 }
+
+# -----------------------------------------------------------------------------
+# Container App Outputs (Issue #005)
+# -----------------------------------------------------------------------------
+
+output "app_url" {
+  description = "FQDN of the Container App (use with https://)"
+  value       = azurerm_container_app.petclinic.ingress[0].fqdn
+}
+
+output "container_app_name" {
+  description = "Name of the Container App"
+  value       = azurerm_container_app.petclinic.name
+}
+
+output "container_app_environment_name" {
+  description = "Name of the Container App Environment"
+  value       = azurerm_container_app_environment.main.name
+}
+
+output "container_app_outbound_ips" {
+  description = "Outbound IP addresses of the Container App"
+  value       = azurerm_container_app.petclinic.outbound_ip_addresses
+}
+
+output "log_analytics_workspace_id" {
+  description = "ID of the Log Analytics Workspace"
+  value       = azurerm_log_analytics_workspace.main.id
+}

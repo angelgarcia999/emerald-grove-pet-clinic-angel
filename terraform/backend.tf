@@ -1,6 +1,6 @@
 terraform {
-  # Local backend for initial development
-  # Will migrate to Azure Storage backend before production deployment
+  # Local backend for development
+  # TODO: Migrate to Azure Storage backend when setting up GitHub Actions (Issue #007)
   backend "local" {
     path = "terraform.tfstate"
   }

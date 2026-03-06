@@ -25,6 +25,9 @@ resource "azurerm_postgresql_flexible_server" "main" {
   sku_name   = var.db_sku_name
   storage_mb = var.db_storage_mb
 
+  # Availability zone
+  zone = "3"
+
   # Backup configuration
   backup_retention_days = var.db_backup_retention_days
 
